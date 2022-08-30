@@ -1,5 +1,6 @@
 import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/spacing.dart';
+import 'package:bill_splitter/ui/signup/signup.dart';
 import 'package:bill_splitter/widgets/common_text_field.dart';
 import 'package:bill_splitter/widgets/progress_dialog.dart';
 import 'package:bill_splitter/widgets/widgets.dart';
@@ -51,8 +52,13 @@ class SignInScreen extends StatelessWidget {
                       Text("If you are new /", style: h3Light().copyWith(
                           color: MyColor.greyColor, fontSize: 16),),
                       addHorizontalSpacing(6),
-                      Text("Create account",
-                          style: h3Bold().copyWith(fontSize: 16)),
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.pushNamed(context, SignUpScreen.routeName);
+                        },
+                        child: Text("Create account",
+                            style: h3Bold().copyWith(fontSize: 16)),
+                      ),
                     ],
                   ),
                   addVerticalSpacing(40),

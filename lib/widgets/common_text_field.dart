@@ -11,43 +11,44 @@ class CommonTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatter;
   final bool? obscureText;
   final TextInputAction? textInputAction;
-  const CommonTextField({Key? key,
-  this.controller,
+  final Function(String value)? onChanged;
+  const CommonTextField({
+    Key? key,
+    this.controller,
     this.hint,
     this.label,
     this.textInputType,
     this.inputFormatter,
     this.obscureText,
     this.textInputAction,
+    this.onChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,
-      keyboardType: textInputType,
-      inputFormatters: inputFormatter,
-      obscureText: obscureText??false,
-      style: h3Light().copyWith(fontSize: 16),
-      textInputAction: textInputAction,
-      decoration: InputDecoration(
-        hintText: hint,
-        fillColor: MyColor.primaryColor.withAlpha(20),
-        filled: true,
-        labelStyle: h3Light().copyWith(fontSize: 16,color: MyColor.greyColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: MyColor.greyColor,width: 1)
-        ),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: MyColor.greyColor,width: 0)
-        ),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: MyColor.primaryColor,width: 1)
-        ),
-      )
-    );
+        controller: controller,
+        keyboardType: textInputType,
+        inputFormatters: inputFormatter,
+        obscureText: obscureText ?? false,
+        onChanged: onChanged,
+        style: h3Light().copyWith(fontSize: 16),
+        textInputAction: textInputAction,
+        decoration: InputDecoration(
+          hintText: hint,
+          fillColor: MyColor.primaryColor.withAlpha(20),
+          filled: true,
+          labelStyle:
+              h3Light().copyWith(fontSize: 16, color: MyColor.greyColor),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: MyColor.greyColor, width: 1)),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: MyColor.greyColor, width: 0)),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: MyColor.primaryColor, width: 1)),
+        ));
   }
 }

@@ -1,14 +1,11 @@
-import 'package:bill_splitter/repository/auth_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  var authRepository = AuthRepository();
   var firebaseAuth = FirebaseAuth.instance;
   var userRef = FirebaseDatabase.instance.ref("user");
   var username = "";
@@ -17,10 +14,8 @@ class AuthCubit extends Cubit<AuthState> {
   createAccount(username,email,password){
     emit(AuthLoading());
     firebaseAuth.createUserWithEmailAndPassword(email: email, password: password)
-        .then((value) async{
-      await updateUserInfo(username);
-      await _createUser();
-      emit(AuthSuccess());
+        .then((value){
+      updateUserInfo(username);
     }).onError((error, stackTrace){
       emit(AuthError(error.toString()));
     });
@@ -49,6 +44,7 @@ class AuthCubit extends Cubit<AuthState> {
           .child(firebaseAuth.currentUser!.uid.toString())
           .set(user)
           .then((value){
+            emit(AuthSuccess());
             if (kDebugMode) {
               print("User created successfully");
             }
@@ -59,24 +55,15 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<dynamic> getUserDetail()async{
-    emit(AuthLoading());
-    userRef.child(firebaseAuth.currentUser?.uid??"").get()
-        .then((value){
-          username = value.child("name").value.toString();
-      print("getUserDetail: ${value.child("name").value}");
-      emit(AuthSuccess());
-    }).onError((error, stackTrace){
-      emit(AuthError(error.toString()));
-    });
-  }
-
-  Future<dynamic> updateUserInfo(String name)async{
+  updateUserInfo(String name){
     firebaseAuth.currentUser?.updateDisplayName(name)
         .then((value){
+          _createUser();
         })
         .onError((error, stackTrace){
-          print(error.toString());
+          if (kDebugMode) {
+            print(error.toString());
+          }
         });
   }
 }
