@@ -45,14 +45,15 @@ class SplitCubit extends Cubit<SplitState> {
         transactionBy: FirebaseAuth.instance.currentUser?.displayName,
         time: DateTime.now().microsecondsSinceEpoch,
         members: transactionMember);
-    group?.transactions ??= [];
+
+    /*group?.transactions ??= [];
     group?.transactions?.add(splitTransaction);
     group?.members?.forEach((element) {
       print("${element.name} : ${element.amount}");
     });
     group?.transactions?.forEach((element) {
       print("${element.transactionName} ${element.transactionAmount}");
-    });
+    });*/
     Map<String, dynamic> update = {};
     group?.members?.forEach((element) {
       update["members/${element.id}/amount"] = element.amount;

@@ -18,3 +18,5 @@ class LogoutSuccess extends DashboardState {}
 class MemberJoined extends DashboardState {}
 
 class SplitChanged extends DashboardState {}
+
+class GroupNotFound extends DashboardState {}

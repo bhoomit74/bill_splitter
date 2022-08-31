@@ -28,7 +28,7 @@ class DashboardCubit extends Cubit<DashboardState> {
         if (value.hasChild("groups")) {
           fetchGroup(value.child("groups").children.first.key);
         } else {
-          emit(DashboardSuccess());
+          emit(GroupNotFound());
         }
       }
     }).onError((error, stackTrace) {
@@ -101,16 +101,16 @@ class DashboardCubit extends Cubit<DashboardState> {
           });
           List<SplitTransaction> transactions = [];
           value.child("transactions").children.forEach((element) {
-            /*print("in transaction child")
+            print("in transaction child");
             List<GroupMember> splitMembers = [];
-            element.child("members").forEach((member) {
+            element.child("members").children.forEach((member) {
               print("in member child");
               splitMembers.add(GroupMember(
                   id: member.child("id").value.toString(),
                   name: member.child("name").value.toString(),
                   amount:
                       double.parse(member.child("amount").value.toString())));
-            });*/
+            });
             transactions.add(SplitTransaction(
                 transactionId: element.child("transactionId").value.toString(),
                 transactionName:

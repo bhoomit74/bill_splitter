@@ -36,7 +36,7 @@ class CommonTextField extends StatelessWidget {
         textInputAction: textInputAction,
         decoration: InputDecoration(
           hintText: hint,
-          fillColor: MyColor.primaryColor.withAlpha(20),
+          fillColor: MyColor.white_800,
           filled: true,
           labelStyle:
               h3Light().copyWith(fontSize: 16, color: MyColor.greyColor),
@@ -48,7 +48,7 @@ class CommonTextField extends StatelessWidget {
               borderSide: BorderSide(color: MyColor.greyColor, width: 0)),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: MyColor.primaryColor, width: 1)),
+              borderSide: BorderSide(color: MyColor.black_800, width: 1)),
         ));
   }
 }

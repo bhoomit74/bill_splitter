@@ -1,10 +1,10 @@
 import 'package:bill_splitter/styles/colors.dart';
-import 'package:bill_splitter/styles/spacing.dart';
 import 'package:bill_splitter/styles/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/group_member.dart';
+import '../../../styles/spacing.dart';
 
 class MemberItem extends StatelessWidget {
   final GroupMember groupMember;
@@ -14,7 +14,6 @@ class MemberItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("amount : ${groupMember.amount}");
     return Stack(
       children: [
         Container(
@@ -31,16 +30,16 @@ class MemberItem extends StatelessWidget {
                   ? Alignment.topCenter
                   : Alignment.bottomCenter,
               child: Container(
-                height: 100 * length,
+                height: 50 + 100 * length,
                 width: 50,
                 alignment: groupMember.amount?.isNegative ?? false
                     ? Alignment.topCenter
                     : Alignment.bottomCenter,
                 padding: groupMember.amount?.isNegative ?? false
                     ? const EdgeInsets.only(
-                        top: 2, bottom: 0, left: 2, right: 2)
+                        top: 2, bottom: 2, left: 2, right: 2)
                     : const EdgeInsets.only(
-                        top: 0, bottom: 2, left: 2, right: 2),
+                        top: 2, bottom: 2, left: 2, right: 2),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color: groupMember.amount?.toInt().isNegative ?? false
@@ -51,7 +50,7 @@ class MemberItem extends StatelessWidget {
                   width: 50,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: MyColor.grey_800,
+                    color: MyColor.white_800,
                   ),
                   child: Center(
                     child: Text(
@@ -74,6 +73,7 @@ class MemberItem extends StatelessWidget {
             width: 70,
             left: 1,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Center(
                   child: Text(

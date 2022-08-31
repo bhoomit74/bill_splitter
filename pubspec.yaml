@@ -41,6 +41,7 @@ dependencies:
   firebase_database:
   flutter_bloc:
   uuid:
+  flutter_advanced_drawer:
 
 dev_dependencies:
   flutter_test:

@@ -18,6 +18,6 @@ class MyColor {
   static var pink_600 = const Color(0xFFF869D5);
   static var blue_700 = const Color(0xFF5650DE);
 
-  static var primaryColor = const Color(0xFF5943bf);
+  static var primaryColor = const Color(0xFF22202B);
   static var greyColor = const Color(0xFFBBB8B5);
 }

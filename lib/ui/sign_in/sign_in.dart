@@ -24,12 +24,13 @@ class SignInScreen extends StatelessWidget {
     return BlocConsumer<AuthCubit, AuthState>(
       bloc: cubit,
       listener: (context, state) {
-        if(state is AuthLoading){
+        if (state is AuthLoading) {
           ProgressDialogUtils.showProgressDialog(context);
-        }else if(state is AuthSuccess){
+        } else if (state is AuthSuccess) {
           ProgressDialogUtils.dismissProgressDialog();
-          Navigator.pushNamedAndRemoveUntil(context, Dashboard.routeName, (route) => false);
-        }else if(state is AuthError){
+          Navigator.pushNamedAndRemoveUntil(
+              context, Dashboard.routeName, (route) => false);
+        } else if (state is AuthError) {
           ProgressDialogUtils.dismissProgressDialog();
           showMessageDialog(context, state.errorMessage);
         }
@@ -38,22 +39,32 @@ class SignInScreen extends StatelessWidget {
         return Scaffold(
           body: SafeArea(
             child: Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Hey,", style: h3Bold(),),
+                  Text(
+                    "Hey,",
+                    style: h3Bold(),
+                  ),
                   addVerticalSpacing(6),
-                  Text("Login Now.", style: h3Bold(),),
+                  Text(
+                    "Login Now.",
+                    style: h3Bold(),
+                  ),
                   addVerticalSpacing(10),
                   Row(
                     children: [
-                      Text("If you are new /", style: h3Light().copyWith(
-                          color: MyColor.greyColor, fontSize: 16),),
+                      Text(
+                        "If you are new /",
+                        style: h3Light().copyWith(
+                            color: MyColor.black_800.withOpacity(0.5),
+                            fontSize: 16),
+                      ),
                       addHorizontalSpacing(6),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.pushNamed(context, SignUpScreen.routeName);
                         },
                         child: Text("Create account",
@@ -74,10 +85,8 @@ class SignInScreen extends StatelessWidget {
                   ),
                   addVerticalSpacing(30),
                   commonButton("Login", context, () {
-                    cubit.login(
-                        emailController.text.trim().toString(),
-                        passwordController.text.trim().toString()
-                    );
+                    cubit.login(emailController.text.trim().toString(),
+                        passwordController.text.trim().toString());
                   })
                 ],
               ),

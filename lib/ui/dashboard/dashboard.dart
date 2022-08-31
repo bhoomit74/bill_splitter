@@ -1,14 +1,15 @@
 import 'package:bill_splitter/bloc/dashboard/dashboard_cubit.dart';
 import 'package:bill_splitter/main.dart';
+import 'package:bill_splitter/styles/app_images.dart';
 import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/spacing.dart';
 import 'package:bill_splitter/styles/theme.dart';
 import 'package:bill_splitter/ui/dashboard/components/member_item.dart';
+import 'package:bill_splitter/ui/dashboard/components/transaction_item.dart';
 import 'package:bill_splitter/ui/split_screen/split_screen.dart';
 import 'package:bill_splitter/widgets/common_text_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../widgets/bottom_sheet.dart';
@@ -45,6 +46,8 @@ class _DashboardState extends State<Dashboard> {
           ProgressDialogUtils.showProgressDialog(context);
         } else if (state is DashboardSuccess) {
           ProgressDialogUtils.dismissProgressDialog();
+        } else if (state is GroupNotFound) {
+          ProgressDialogUtils.dismissProgressDialog();
         } else if (state is DashboardError) {
           ProgressDialogUtils.dismissProgressDialog();
           showMessageDialog(context, state.errorMessage);
@@ -59,106 +62,139 @@ class _DashboardState extends State<Dashboard> {
       },
       builder: (context, state) {
         return Scaffold(
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              group = cubit.group;
-              Navigator.pushNamed(context, SplitScreen.splitScreenRoute)
-                  .then((value) {
-                if (value == true) {
-                  cubit.getUserDetail();
-                }
-              });
-            },
-            backgroundColor: MyColor.primaryColor,
-            child: const Icon(Icons.add),
-          ),
+          floatingActionButton: cubit.group != null
+              ? FloatingActionButton(
+                  onPressed: () {
+                    group = cubit.group;
+                    Navigator.pushNamed(context, SplitScreen.splitScreenRoute)
+                        .then((value) {
+                      if (value == true) {
+                        cubit.getUserDetail();
+                      }
+                    });
+                  },
+                  backgroundColor: MyColor.primaryColor,
+                  child: const Icon(Icons.add),
+                )
+              : null,
           body: SafeArea(
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Good morning,",
-                        style: h3().copyWith(fontSize: 20),
-                      ),
-                      Row(
-                        children: [
-                          GestureDetector(
-                              onTap: () {
-                                showAddMemberSheet();
+            child: RefreshIndicator(
+              onRefresh: () async {
+                cubit.getUserDetail();
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  child: Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.square_grid_2x2_fill,
+                                    color: MyColor.black_800,
+                                  ),
+                                  addHorizontalSpacing(20),
+                                  Text(
+                                    "Dashboard",
+                                    style: h3().copyWith(fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            cubit.group != null
+                                ? GestureDetector(
+                                    onTap: () {
+                                      showAddMemberSheet();
+                                    },
+                                    child: Icon(
+                                      CupertinoIcons
+                                          .person_crop_circle_badge_plus,
+                                      color: primaryColor,
+                                    ))
+                                : Container(),
+                            addHorizontalSpacing(10)
+                          ],
+                        ),
+                        addVerticalSpacing(20),
+                        Visibility(
+                          visible: cubit.group != null,
+                          child: Flexible(
+                            child: SizedBox(
+                              height: 300,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: cubit.group?.members?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  if (cubit.group != null) {
+                                    var member = cubit.group?.members![index];
+                                    var length = ((cubit.maxAmount.toInt() *
+                                                (member?.amount ?? 0)) /
+                                            10000)
+                                        .abs();
+                                    return MemberItem(
+                                        groupMember: member!, length: length);
+                                  } else {
+                                    return Container();
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: cubit.group != null,
+                          child: Flexible(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: cubit.group?.transactions?.length ?? 0,
+                              itemBuilder: (context, index) {
+                                if (cubit.group != null &&
+                                    (cubit.group!.transactions?.length ?? 0) >
+                                        0) {
+                                  var transaction =
+                                      cubit.group?.transactions![index];
+                                  if (transaction != null) {
+                                    return TransactionItem(
+                                        transaction: transaction);
+                                  } else {
+                                    return Container();
+                                  }
+                                } else {
+                                  return Container();
+                                }
                               },
-                              child: Icon(
-                                Icons.person_add,
-                                color: primaryColor,
-                                size: 20,
-                              )),
-                          addHorizontalSpacing(20),
-                          GestureDetector(
-                              onTap: () {
-                                cubit.logout();
-                              },
-                              child: Icon(
-                                Icons.logout,
-                                color: primaryColor,
-                                size: 20,
-                              )),
-                        ],
-                      )
-                    ],
-                  ),
-                  Text(
-                    cubit.username,
-                    style: h3Light().copyWith(fontSize: 20),
-                  ),
-                  addVerticalSpacing(20),
-                  Expanded(
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: cubit.group?.members?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        if (cubit.group != null) {
-                          var member = cubit.group?.members![index];
-                          var length = ((cubit.maxAmount.toInt() *
-                                      (member?.amount ?? 0)) /
-                                  10000)
-                              .abs();
-                          return MemberItem(
-                              groupMember: member!, length: length);
-                        } else {
-                          return Container();
-                        }
-                      },
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: cubit.group == null,
+                          child: Center(
+                              child: Column(
+                            children: [
+                              Image.asset(AppImages.onBoardingPage2),
+                              addVerticalSpacing(20),
+                              const Text("You are not part of any group"),
+                              addVerticalSpacing(20),
+                              commonButton("Create Group", context, () {
+                                showCreateGroupSheet();
+                              }),
+                            ],
+                          )),
+                        )
+                      ],
                     ),
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: cubit.group?.transactions?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        if (cubit.group != null &&
-                            (cubit.group!.transactions?.length ?? 0) > 0) {
-                          var transaction = cubit.group?.transactions![index];
-                          return ListTile(
-                            tileColor: MyColor.grey_800,
-                            title: Text(
-                              transaction?.transactionBy ?? "",
-                              style: h3().copyWith(fontSize: 14),
-                            ),
-                            subtitle: Text(
-                              "${transaction?.transactionName} : ${transaction?.transactionAmount}",
-                              style: h3().copyWith(fontSize: 12),
-                            ),
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ),
-                  )
-                ],
+                ),
               ),
             ),
           ),
@@ -190,6 +226,35 @@ class _DashboardState extends State<Dashboard> {
               addVerticalSpacing(20),
               commonButton("Add Member", context, () {
                 cubit.addMemberInGroup(controller.text.toString());
+              })
+            ],
+          ),
+        ));
+  }
+
+  showCreateGroupSheet() {
+    TextEditingController controller = TextEditingController();
+    CustomBottomSheet().showSheet(
+        context,
+        Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              addVerticalSpacing(10),
+              Text(
+                "Create Group",
+                style: h3Bold().copyWith(fontSize: 20),
+              ),
+              addVerticalSpacing(20),
+              CommonTextField(
+                hint: "Group name",
+                controller: controller,
+              ),
+              addVerticalSpacing(20),
+              commonButton("Create group", context, () {
+                cubit.createGroup(controller.text.toString());
               })
             ],
           ),

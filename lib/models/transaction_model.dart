@@ -42,7 +42,11 @@ class SplitTransaction {
     data['transactionAmount'] = transactionAmount;
     data['time'] = time;
     if (members != null) {
-      data['members'] = members!.map((v) => v.toJson()).toList();
+      Map<String, dynamic> member = <String, dynamic>{};
+      members!.forEach((v) {
+        member["${v.id}"] = v.toJson();
+      });
+      data['members'] = member;
     }
     return data;
   }
