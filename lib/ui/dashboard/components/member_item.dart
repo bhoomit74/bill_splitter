@@ -30,7 +30,7 @@ class MemberItem extends StatelessWidget {
                   ? Alignment.topCenter
                   : Alignment.bottomCenter,
               child: Container(
-                height: 50 + 100 * length,
+                height: 50 + 50 * length,
                 width: 50,
                 alignment: groupMember.amount?.isNegative ?? false
                     ? Alignment.topCenter
@@ -41,13 +41,13 @@ class MemberItem extends StatelessWidget {
                     : const EdgeInsets.only(
                         top: 2, bottom: 2, left: 2, right: 2),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(100),
                     color: groupMember.amount?.toInt().isNegative ?? false
                         ? MyColor.orange
                         : MyColor.blue_600),
                 child: Container(
-                  height: 50,
-                  width: 50,
+                  height: 46,
+                  width: 46,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: MyColor.white_800,
@@ -85,7 +85,11 @@ class MemberItem extends StatelessWidget {
                 Center(
                   child: Text(
                     "${groupMember.amount}",
-                    style: h3Bold().copyWith(fontSize: 14),
+                    style: h3Bold().copyWith(
+                        fontSize: 14,
+                        color: groupMember.amount?.isNegative == true
+                            ? MyColor.orange
+                            : MyColor.blue_600),
                   ),
                 ),
               ],

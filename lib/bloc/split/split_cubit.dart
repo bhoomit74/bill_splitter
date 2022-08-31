@@ -84,6 +84,9 @@ class SplitCubit extends Cubit<SplitState> {
       totalSplitAmount = double.parse(amount);
       splitAmount = (totalSplitAmount / splitMembers.length);
       emit(SplitChanged());
+    } else {
+      splitAmount = 0.0;
+      emit(SplitChanged());
     }
   }
 }

@@ -38,59 +38,63 @@ class SplitScreen extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           body: SafeArea(
-            child: Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Split",
-                      style: h3().copyWith(fontSize: 20),
-                    ),
-                    addVerticalSpacing(30),
-                    CommonTextField(
-                      hint: "Spent on",
-                      controller: titleController,
-                    ),
-                    addVerticalSpacing(20),
-                    CommonTextField(
-                      hint: "Description",
-                      controller: descriptionController,
-                    ),
-                    addVerticalSpacing(20),
-                    CommonTextField(
-                      hint: "Amount",
-                      onChanged: (value) {
-                        cubit.changeTotalSplitAmount(value);
-                      },
-                    ),
-                    addVerticalSpacing(20),
-                    Flexible(
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: group?.members?.length ?? 0,
-                            itemBuilder: (context, index) {
-                              GroupMember? member = group?.members![index];
-                              return SplitMemberItem(
-                                  member: member,
-                                  splitAmount: cubit.splitAmount,
-                                  isChecked:
-                                      cubit.splitMembers.contains(member),
-                                  onCheckedChange: (isChecked) {
-                                    if (isChecked == true) {
-                                      cubit.addMemberFromSplit(member!);
-                                    } else {
-                                      cubit.removeMemberFromSplit(member!);
-                                    }
-                                  });
-                            })),
-                    addVerticalSpacing(20),
-                    commonButton("Add split", context, () {
-                      cubit.addSplit(
-                          titleController.text, descriptionController.text);
-                    })
-                  ],
-                )),
+            child: SingleChildScrollView(
+              child: Container(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Split",
+                        style: h3().copyWith(fontSize: 20),
+                      ),
+                      addVerticalSpacing(30),
+                      CommonTextField(
+                        hint: "Spent on",
+                        controller: titleController,
+                      ),
+                      addVerticalSpacing(20),
+                      CommonTextField(
+                        hint: "Description",
+                        controller: descriptionController,
+                      ),
+                      addVerticalSpacing(20),
+                      CommonTextField(
+                        hint: "Amount",
+                        onChanged: (value) {
+                          cubit.changeTotalSplitAmount(value);
+                        },
+                      ),
+                      addVerticalSpacing(20),
+                      Flexible(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: group?.members?.length ?? 0,
+                              itemBuilder: (context, index) {
+                                GroupMember? member = group?.members![index];
+                                return SplitMemberItem(
+                                    member: member,
+                                    splitAmount: cubit.splitAmount,
+                                    isChecked:
+                                        cubit.splitMembers.contains(member),
+                                    onCheckedChange: (isChecked) {
+                                      if (isChecked == true) {
+                                        cubit.addMemberFromSplit(member!);
+                                      } else {
+                                        cubit.removeMemberFromSplit(member!);
+                                      }
+                                    });
+                              })),
+                      addVerticalSpacing(20),
+                      commonButton("Add split", context, () {
+                        cubit.addSplit(
+                            titleController.text, descriptionController.text);
+                      })
+                    ],
+                  )),
+            ),
           ),
         );
       },

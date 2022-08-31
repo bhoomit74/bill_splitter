@@ -16,6 +16,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   var userRef = FirebaseDatabase.instance.ref("user");
   var allGroupRef = FirebaseDatabase.instance.ref("allGroups");
   var username = "";
+  var userId = "";
   GroupModel? group;
   int maxAmount = 0;
   DashboardCubit() : super(DashboardInitial());
@@ -24,6 +25,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     emit(DashboardLoading());
     userRef.child(firebaseAuth.currentUser?.uid ?? "").get().then((value) {
       username = value.child("name").value.toString();
+      userId = value.child("id").value.toString();
       if (kDebugMode) {
         if (value.hasChild("groups")) {
           fetchGroup(value.child("groups").children.first.key);

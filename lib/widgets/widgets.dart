@@ -7,35 +7,38 @@ import '../styles/colors.dart';
 import '../styles/spacing.dart';
 import '../styles/theme.dart';
 
-Widget button(String text,BuildContext context,String routeName){
+Widget button(String text, BuildContext context, String routeName) {
   return GestureDetector(
-    onTap: (){
+    onTap: () {
       Navigator.pushNamed(context, routeName);
-      },
+    },
     child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
       decoration: BoxDecoration(
-        color: MyColor.purple,
-        borderRadius: BorderRadius.circular(40)
+          color: MyColor.purple, borderRadius: BorderRadius.circular(40)),
+      child: Text(
+        text,
+        style: buttonTextStyle(),
       ),
-      child: Text(text,style: buttonTextStyle(),),
     ),
   );
 }
 
-Widget buttonFrostedGlass(String text,BuildContext context,Function() onTap){
+Widget buttonFrostedGlass(String text, BuildContext context, Function() onTap) {
   return GestureDetector(
     onTap: onTap,
     child: ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10.0,sigmaY: 10.0),
+        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 40),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
           decoration: BoxDecoration(
               color: MyColor.primaryColor,
-              borderRadius: BorderRadius.circular(40)
+              borderRadius: BorderRadius.circular(40)),
+          child: Text(
+            text,
+            style: buttonTextStyle().copyWith(color: MyColor.white_800),
           ),
-          child: Text(text,style: buttonTextStyle().copyWith(color: MyColor.white_800),),
         ),
       ),
     ),
@@ -47,13 +50,14 @@ Widget buttonSmall(String text, Function onTap) {
     child: Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
       decoration: BoxDecoration(
-          color: MyColor.white_800,
-          borderRadius: BorderRadius.circular(12)
-      ),
+          color: MyColor.white_800, borderRadius: BorderRadius.circular(12)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(text, style: buttonSmallTextStyle(),),
+          Text(
+            text,
+            style: h5().copyWith(fontSize: 12),
+          ),
           addHorizontalSpacing(10),
           Container(
               alignment: Alignment.center,
@@ -62,28 +66,33 @@ Widget buttonSmall(String text, Function onTap) {
                 color: MyColor.black_800,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(CupertinoIcons.play_arrow_solid, color: MyColor.white,
-                size: 10,))
+              child: Icon(
+                Icons.copy,
+                color: MyColor.white,
+                size: 10,
+              ))
         ],
       ),
     ),
   );
 }
 
-  Widget commonButton(String text,BuildContext context,Function() onTap){
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.maxFinite,
-        padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 40),
-        decoration: BoxDecoration(
-            color: MyColor.primaryColor,
-            borderRadius: BorderRadius.circular(10)
-        ),
-        child: Center(child: Text(text,style: buttonTextStyle().copyWith(color: MyColor.white_800),)),
-      ),
-    );
-  }
+Widget commonButton(String text, BuildContext context, Function() onTap) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: double.maxFinite,
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      decoration: BoxDecoration(
+          color: MyColor.primaryColor, borderRadius: BorderRadius.circular(10)),
+      child: Center(
+          child: Text(
+        text,
+        style: buttonTextStyle().copyWith(color: MyColor.white_800),
+      )),
+    ),
+  );
+}
 
 Future showMessageDialog(BuildContext context, String message) {
   return showDialog(

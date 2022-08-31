@@ -62,6 +62,30 @@ class _DashboardState extends State<Dashboard> {
       },
       builder: (context, state) {
         return Scaffold(
+          backgroundColor: MyColor.white,
+          appBar: AppBar(
+              title: Text(
+                "Dashboard",
+                style: h3().copyWith(fontSize: 20),
+              ),
+              actions: [
+                cubit.group != null
+                    ? GestureDetector(
+                        onTap: () {
+                          showAddMemberSheet();
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          child: Icon(
+                            CupertinoIcons.person_crop_circle_badge_plus,
+                            color: primaryColor,
+                          ),
+                        ))
+                    : Container(),
+              ],
+              backgroundColor: Colors.white,
+              elevation: 0,
+              iconTheme: IconThemeData(color: MyColor.black_800)),
           floatingActionButton: cubit.group != null
               ? FloatingActionButton(
                   onPressed: () {
@@ -77,6 +101,63 @@ class _DashboardState extends State<Dashboard> {
                   child: const Icon(Icons.add),
                 )
               : null,
+          drawer: Drawer(
+            child: ListView(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  color: MyColor.grey_800,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        CupertinoIcons.person_alt_circle,
+                        color: MyColor.black_800,
+                        size: 80,
+                      ),
+                      addVerticalSpacing(5),
+                      Text(cubit.username, style: h3().copyWith(fontSize: 20)),
+                      addVerticalSpacing(20),
+                      buttonSmall(cubit.userId, () {}),
+                      addVerticalSpacing(10),
+                    ],
+                  ),
+                ),
+                addVerticalSpacing(10),
+                ListTile(
+                  leading: const Icon(
+                    CupertinoIcons.home,
+                  ),
+                  title: const Text('Dashboard'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    CupertinoIcons.group,
+                  ),
+                  title: const Text('Create group'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showCreateGroupSheet();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    CupertinoIcons.square_arrow_left,
+                  ),
+                  title: const Text('Logout'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    cubit.logout();
+                  },
+                )
+              ],
+            ),
+          ),
           body: SafeArea(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -85,45 +166,12 @@ class _DashboardState extends State<Dashboard> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Flexible(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.square_grid_2x2_fill,
-                                    color: MyColor.black_800,
-                                  ),
-                                  addHorizontalSpacing(20),
-                                  Text(
-                                    "Dashboard",
-                                    style: h3().copyWith(fontSize: 20),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            cubit.group != null
-                                ? GestureDetector(
-                                    onTap: () {
-                                      showAddMemberSheet();
-                                    },
-                                    child: Icon(
-                                      CupertinoIcons
-                                          .person_crop_circle_badge_plus,
-                                      color: primaryColor,
-                                    ))
-                                : Container(),
-                            addHorizontalSpacing(10)
-                          ],
-                        ),
-                        addVerticalSpacing(20),
                         Visibility(
                           visible: cubit.group != null,
                           child: Flexible(
