@@ -1,5 +1,6 @@
 import 'package:bill_splitter/models/transaction_model.dart';
 import 'package:bill_splitter/ui/dashboard/components/transaction_image.dart';
+import 'package:bill_splitter/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../styles/colors.dart';
@@ -14,14 +15,14 @@ class TransactionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
           color: MyColor.white_800, borderRadius: BorderRadius.circular(10)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          addHorizontalSpacing(4),
+          //addHorizontalSpacing(4),
           TransactionImage(transaction: transaction),
           addHorizontalSpacing(10),
           Expanded(
@@ -30,18 +31,22 @@ class TransactionItem extends StatelessWidget {
               children: [
                 Text(
                   transaction.transactionBy.toString(),
-                  style: h4Bold(),
+                  style: h5().copyWith(
+                      fontSize: 16,
+                      color: MyColor.primaryColor,
+                      fontWeight: FontWeight.w400),
                 ),
                 addVerticalSpacing(4),
                 Text(
                   transaction.transactionName.toString(),
-                  style: h5(),
+                  style: h5().copyWith(fontSize: 12),
                 )
               ],
             ),
           ),
           addHorizontalSpacing(10),
-          Text(transaction.transactionAmount.toString(), style: h4Bold()),
+          Text(transaction.transactionAmount?.convertToRupee() ?? "",
+              style: h5().copyWith(fontSize: 16, color: MyColor.primaryColor)),
           addHorizontalSpacing(4),
         ],
       ),

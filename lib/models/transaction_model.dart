@@ -7,6 +7,7 @@ class SplitTransaction {
   String? transactionBy;
   double? transactionAmount;
   int? time;
+  bool? isSettleUpTransaction;
   List<GroupMember>? members;
 
   SplitTransaction(
@@ -16,6 +17,7 @@ class SplitTransaction {
       this.transactionBy,
       this.transactionAmount,
       this.time,
+      this.isSettleUpTransaction,
       this.members});
 
   SplitTransaction.fromJson(Map<String, dynamic> json) {
@@ -24,7 +26,8 @@ class SplitTransaction {
     transactionDescription = json['transactionDescription'];
     transactionBy = json['transactionBy'];
     transactionAmount = json['transactionAmount'];
-    time = json[time];
+    time = json['time'];
+    isSettleUpTransaction = json['isSettleUpTransaction'];
     if (json['members'] != null) {
       members = <GroupMember>[];
       json['members'].forEach((v) {
@@ -41,6 +44,7 @@ class SplitTransaction {
     data['transactionBy'] = transactionBy;
     data['transactionAmount'] = transactionAmount;
     data['time'] = time;
+    data['isSettleUpTransaction'] = isSettleUpTransaction;
     if (members != null) {
       Map<String, dynamic> member = <String, dynamic>{};
       members!.forEach((v) {

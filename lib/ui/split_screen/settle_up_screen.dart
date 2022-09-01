@@ -12,17 +12,19 @@ import '../../styles/theme.dart';
 import '../../widgets/common_text_field.dart';
 import '../../widgets/widgets.dart';
 
-class SplitScreen extends StatelessWidget {
-  static String splitScreenRoute = "SplitScreen";
+class SettleUpScreen extends StatelessWidget {
+  static String routeName = "SettleUpScreen";
   final GroupModel? group;
+  final GroupMember? member;
 
-  const SplitScreen({Key? key, required this.group}) : super(key: key);
+  const SettleUpScreen({Key? key, required this.group, required this.member})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var cubit = SplitCubit(group);
-    var titleController = TextEditingController();
-    var descriptionController = TextEditingController();
+    var cubit = SplitCubit(group, settleMember: member);
+    var controller =
+        TextEditingController(text: cubit.totalSplitAmount.toString());
     return BlocConsumer<SplitCubit, SplitState>(
       bloc: cubit,
       listener: (context, state) {
@@ -47,22 +49,13 @@ class SplitScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Split",
+                        "Settle Up",
                         style: h3().copyWith(fontSize: 20),
                       ),
                       addVerticalSpacing(30),
                       CommonTextField(
-                        hint: "Spent on",
-                        controller: titleController,
-                      ),
-                      addVerticalSpacing(20),
-                      CommonTextField(
-                        hint: "Description",
-                        controller: descriptionController,
-                      ),
-                      addVerticalSpacing(20),
-                      CommonTextField(
                         hint: "Amount",
+                        controller: controller,
                         textInputType: TextInputType.number,
                         inputFormatter: <TextInputFormatter>[
                           FilteringTextInputFormatter.allow(
@@ -77,26 +70,18 @@ class SplitScreen extends StatelessWidget {
                           child: ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: group?.members?.length ?? 0,
+                              itemCount: 1,
                               itemBuilder: (context, index) {
-                                GroupMember? member = group?.members![index];
                                 return SplitMemberItem(
                                     member: member,
                                     splitAmount: cubit.splitAmount,
                                     isChecked:
                                         cubit.splitMembers.contains(member),
-                                    onCheckedChange: (isChecked) {
-                                      if (isChecked == true) {
-                                        cubit.addMemberFromSplit(member!);
-                                      } else {
-                                        cubit.removeMemberFromSplit(member!);
-                                      }
-                                    });
+                                    onCheckedChange: (isChecked) {});
                               })),
                       addVerticalSpacing(20),
-                      commonButton("Add split", context, () {
-                        cubit.addSplit(
-                            titleController.text, descriptionController.text);
+                      commonButton("Mark as Paid", context, () {
+                        cubit.settleUp();
                       })
                     ],
                   )),

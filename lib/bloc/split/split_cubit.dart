@@ -14,14 +14,24 @@ class SplitCubit extends Cubit<SplitState> {
   List<GroupMember> splitMembers = [];
   double totalSplitAmount = 0;
   double splitAmount = 0;
+  GroupMember? settleMember;
 
   var allGroupRef = FirebaseDatabase.instance.ref("allGroups");
 
-  SplitCubit(this.group) : super(SplitInitial()) {
-    splitMembers.addAll(group?.members ?? []);
+  SplitCubit(this.group, {this.settleMember}) : super(SplitInitial()) {
+    if (settleMember == null) {
+      splitMembers.addAll(group?.members ?? []);
+    } else {
+      splitMembers.add(settleMember!);
+      GroupMember? member = group?.members?.singleWhere(
+          (element) => FirebaseAuth.instance.currentUser?.uid == element.id);
+      if (member != null) {
+        changeTotalSplitAmount(member.amount?.abs().toString() ?? "0");
+      }
+    }
   }
 
-  addSplit(name, desc) {
+  addSplit(name, desc, {isSettleUpTransaction = false}) {
     emit(SplitLoading());
     for (var element in splitMembers) {
       element.amount = (element.amount ?? 0) - splitAmount;
@@ -44,6 +54,7 @@ class SplitCubit extends Cubit<SplitState> {
         transactionAmount: totalSplitAmount,
         transactionBy: FirebaseAuth.instance.currentUser?.displayName,
         time: DateTime.now().microsecondsSinceEpoch,
+        isSettleUpTransaction: isSettleUpTransaction,
         members: transactionMember);
 
     /*group?.transactions ??= [];
@@ -66,6 +77,14 @@ class SplitCubit extends Cubit<SplitState> {
     });
   }
 
+  settleUp() {
+    var title =
+        "${FirebaseAuth.instance.currentUser?.displayName} settle up with ${settleMember?.name}";
+    var description =
+        "${FirebaseAuth.instance.currentUser?.displayName} Paid money to ${settleMember?.name} for settle up";
+    addSplit(title, description, isSettleUpTransaction: true);
+  }
+
   removeMemberFromSplit(GroupMember member) {
     splitMembers.remove(member);
     splitAmount = (totalSplitAmount / splitMembers.length);
@@ -80,13 +99,21 @@ class SplitCubit extends Cubit<SplitState> {
 
   changeTotalSplitAmount(String amount) {
     print("Total amount : ${amount}");
-    if (amount.isNotEmpty) {
-      totalSplitAmount = double.parse(amount);
-      splitAmount = (totalSplitAmount / splitMembers.length);
-      emit(SplitChanged());
-    } else {
-      splitAmount = 0.0;
-      emit(SplitChanged());
+    try {
+      if (amount.isNotEmpty) {
+        if (amount.endsWith('.')) {
+          amount.replaceAll('.', '');
+        }
+        totalSplitAmount = double.parse(amount);
+        splitAmount = (totalSplitAmount / splitMembers.length);
+        emit(SplitChanged());
+      } else {
+        splitAmount = 0.0;
+        emit(SplitChanged());
+      }
+    } catch (exception) {
+      totalSplitAmount = 0;
+      splitAmount = 0;
     }
   }
 }

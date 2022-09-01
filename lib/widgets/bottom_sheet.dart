@@ -13,7 +13,7 @@ class CustomBottomSheet {
                   bottom: MediaQuery.of(context).viewInsets.bottom),
               decoration: BoxDecoration(
                 color: MyColor.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(24),
               ),
               child: body,
             ),

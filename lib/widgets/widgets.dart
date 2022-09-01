@@ -82,7 +82,7 @@ Widget commonButton(String text, BuildContext context, Function() onTap) {
     onTap: onTap,
     child: Container(
       width: double.maxFinite,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       decoration: BoxDecoration(
           color: MyColor.primaryColor, borderRadius: BorderRadius.circular(10)),
       child: Center(

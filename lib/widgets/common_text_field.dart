@@ -28,7 +28,8 @@ class CommonTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
         controller: controller,
-        keyboardType: textInputType,
+        keyboardType: textInputType ?? TextInputType.name,
+        textCapitalization: TextCapitalization.sentences,
         inputFormatters: inputFormatter,
         obscureText: obscureText ?? false,
         onChanged: onChanged,

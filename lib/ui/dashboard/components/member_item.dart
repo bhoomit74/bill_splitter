@@ -1,50 +1,75 @@
 import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/theme.dart';
+import 'package:bill_splitter/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/group_member.dart';
 import '../../../styles/spacing.dart';
 
-class MemberItem extends StatelessWidget {
+class MemberBarItem extends StatefulWidget {
   final GroupMember groupMember;
-  final double length;
-  const MemberItem({Key? key, required this.groupMember, required this.length})
+  final double heightPercentage;
+  const MemberBarItem(
+      {Key? key, required this.groupMember, required this.heightPercentage})
       : super(key: key);
+
+  @override
+  State<MemberBarItem> createState() => _MemberBarItemState();
+}
+
+class _MemberBarItemState extends State<MemberBarItem> {
+  var initialBarHeight = 50.0;
+  var variableMaxBarHeight = 70.0;
+  late double totalBarHeight;
+  late double graphHeight;
+  late double currentBarHeight;
+
+  late bool haveNegativeAmount;
+
+  @override
+  void initState() {
+    totalBarHeight = initialBarHeight + variableMaxBarHeight;
+    graphHeight = (totalBarHeight * 2) - (initialBarHeight / 2);
+    currentBarHeight = initialBarHeight;
+    haveNegativeAmount = widget.groupMember.amount?.isNegative ?? false;
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        currentBarHeight =
+            initialBarHeight + (variableMaxBarHeight * widget.heightPercentage);
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Container(
-          height: 215,
+          height: graphHeight,
           padding: const EdgeInsets.all(10),
-          alignment: groupMember.amount?.isNegative ?? false
-              ? Alignment.bottomCenter
-              : Alignment.topCenter,
+          alignment:
+              haveNegativeAmount ? Alignment.bottomCenter : Alignment.topCenter,
           child: SizedBox(
-            height: 120,
-            width: 50,
+            height: totalBarHeight,
+            width: initialBarHeight,
             child: Container(
-              alignment: groupMember.amount?.isNegative ?? false
+              alignment: haveNegativeAmount
                   ? Alignment.topCenter
                   : Alignment.bottomCenter,
-              child: Container(
-                height: 50 + 50 * length,
-                width: 50,
-                alignment: groupMember.amount?.isNegative ?? false
+              child: AnimatedContainer(
+                duration: const Duration(seconds: 1),
+                height: currentBarHeight,
+                alignment: haveNegativeAmount
                     ? Alignment.topCenter
                     : Alignment.bottomCenter,
-                padding: groupMember.amount?.isNegative ?? false
-                    ? const EdgeInsets.only(
-                        top: 2, bottom: 2, left: 2, right: 2)
-                    : const EdgeInsets.only(
-                        top: 2, bottom: 2, left: 2, right: 2),
+                padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: groupMember.amount?.toInt().isNegative ?? false
-                        ? MyColor.orange
-                        : MyColor.blue_600),
+                    color:
+                        haveNegativeAmount ? MyColor.orange : MyColor.blue_600),
                 child: Container(
                   height: 46,
                   width: 46,
@@ -54,7 +79,7 @@ class MemberItem extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      groupMember.name
+                      widget.groupMember.name
                           .toString()
                           .characters
                           .first
@@ -77,17 +102,19 @@ class MemberItem extends StatelessWidget {
               children: [
                 Center(
                   child: Text(
-                    "${groupMember.name}",
-                    style: h3Bold().copyWith(fontSize: 14),
+                    "${widget.groupMember.name}",
+                    style: h5()
+                        .copyWith(fontSize: 14, color: MyColor.primaryColor),
                   ),
                 ),
                 addVerticalSpacing(5),
                 Center(
                   child: Text(
-                    "${groupMember.amount}",
-                    style: h3Bold().copyWith(
+                    "${widget.groupMember.amount?.convertToRupee()}",
+                    style: h5().copyWith(
                         fontSize: 14,
-                        color: groupMember.amount?.isNegative == true
+                        fontWeight: FontWeight.w500,
+                        color: haveNegativeAmount
                             ? MyColor.orange
                             : MyColor.blue_600),
                   ),

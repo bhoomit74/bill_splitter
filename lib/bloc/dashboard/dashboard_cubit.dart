@@ -64,7 +64,8 @@ class DashboardCubit extends Cubit<DashboardState> {
               .child(userId)
               .set(member)
               .then((value) {
-            emit(DashboardSuccess());
+            emit(MemberJoined());
+            getUserDetail();
           }).onError((error, stackTrace) {
             emit(DashboardError(error.toString()));
           });
@@ -123,6 +124,9 @@ class DashboardCubit extends Cubit<DashboardState> {
                     element.child("transactionDescription").value.toString(),
                 transactionBy: element.child("transactionBy").value.toString(),
                 time: int.parse(element.child("time").value.toString()),
+                isSettleUpTransaction:
+                    element.child("isSettleUpTransaction").value.toString() ==
+                        "true",
                 members: []));
           });
 
@@ -160,8 +164,11 @@ class DashboardCubit extends Cubit<DashboardState> {
             .child(memberId)
             .set(member)
             .then((value) {
-          emit(MemberJoined());
-          getUserDetail();
+          var groupMap = {group?.groupId: group?.groupName};
+          userRef.child(memberId).child('groups').set(groupMap).then((value) {
+            emit(MemberJoined());
+            getUserDetail();
+          });
         }).onError((error, stackTrace) {
           emit(DashboardError(error.toString()));
         });
@@ -178,5 +185,15 @@ class DashboardCubit extends Cubit<DashboardState> {
     }).onError((error, stackTrace) {
       emit(DashboardError(error.toString()));
     });
+  }
+
+  double getTotalTransactionAmount() {
+    double totalTransactionAmount = 0.0;
+    group?.transactions?.forEach((element) {
+      if (element.isSettleUpTransaction != true) {
+        totalTransactionAmount += element.transactionAmount ?? 0;
+      }
+    });
+    return totalTransactionAmount;
   }
 }
