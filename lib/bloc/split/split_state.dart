@@ -14,3 +14,13 @@ class SplitError extends SplitState {
   final String errorMessage;
   SplitError(this.errorMessage);
 }
+
+class UpiAppUpdated extends SplitState {}
+
+class PaymentSuccess extends SplitState {}
+
+class PaymentFailed extends SplitState {}
+
+class PaymentSubmitted extends SplitState {}
+
+class PaymentMethodChange extends SplitState {}

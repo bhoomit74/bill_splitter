@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 
 class MyCheckBox extends StatefulWidget {
   bool defaultValue;
+  Color checkBoxColor;
   final Function(bool isChecked) onChange;
   MyCheckBox({
     Key? key,
     required this.onChange,
     this.defaultValue = false,
+    this.checkBoxColor = Colors.green,
   }) : super(key: key);
 
   @override
@@ -27,9 +29,9 @@ class _MyCheckBoxState extends State<MyCheckBox> {
                   });
                   widget.onChange(widget.defaultValue);
                 },
-                child: const Icon(
+                child: Icon(
                   CupertinoIcons.check_mark_circled_solid,
-                  color: Colors.green,
+                  color: widget.checkBoxColor,
                   size: 30,
                 ))
             : GestureDetector(

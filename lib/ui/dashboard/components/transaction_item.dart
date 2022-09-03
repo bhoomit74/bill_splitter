@@ -17,10 +17,10 @@ class TransactionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
           color: transaction.isSettleUpTransaction ?? false
-              ? Colors.green.withOpacity(0.1)
+              ? Colors.green.withOpacity(0.7)
               : MyColor.blue_700,
           borderRadius: BorderRadius.circular(10)),
       child: Row(

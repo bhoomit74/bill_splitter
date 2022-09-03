@@ -37,33 +37,35 @@ class TransactionDetail extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("${transaction.transactionBy} spent",
-                            style: h5()
-                                .copyWith(color: MyColor.white, fontSize: 16)),
-                        addVerticalSpacing(4),
-                        Text(
-                            "${transaction.transactionAmount?.convertToRupee()}",
-                            style: h2().copyWith(color: MyColor.white_800)),
-                        addVerticalSpacing(2),
-                        Text(
-                          "on ${transaction.time?.toDate()}",
-                          style: h5()
-                              .copyWith(fontSize: 16, color: MyColor.white_800),
-                        ),
-                        addVerticalSpacing(20),
-                        Text(
-                          "for ${transaction.transactionName}",
-                          style: h4()
-                              .copyWith(fontSize: 14, color: MyColor.white_800),
-                        ),
-                        addVerticalSpacing(5),
-                        Text("${transaction.transactionDescription}",
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("${transaction.transactionBy} spent",
+                              style: h5().copyWith(
+                                  color: MyColor.white, fontSize: 16)),
+                          addVerticalSpacing(4),
+                          Text(
+                              "${transaction.transactionAmount?.convertToRupee()}",
+                              style: h2().copyWith(color: MyColor.white_800)),
+                          addVerticalSpacing(2),
+                          Text(
+                            "on ${transaction.time?.toDate()}",
                             style: h5().copyWith(
-                                fontSize: 14, color: MyColor.grey_800)),
-                      ],
+                                fontSize: 16, color: MyColor.white_800),
+                          ),
+                          addVerticalSpacing(20),
+                          Text(
+                            "for ${transaction.transactionName}",
+                            style: h4().copyWith(
+                                fontSize: 14, color: MyColor.white_800),
+                          ),
+                          addVerticalSpacing(5),
+                          Text("${transaction.transactionDescription}",
+                              style: h5().copyWith(
+                                  fontSize: 14, color: MyColor.grey_800)),
+                        ],
+                      ),
                     ),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(60),

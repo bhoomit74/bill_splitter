@@ -1,8 +1,10 @@
 import 'package:bill_splitter/bloc/split/split_cubit.dart';
 import 'package:bill_splitter/models/group_member.dart';
 import 'package:bill_splitter/models/group_model.dart';
+import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/spacing.dart';
 import 'package:bill_splitter/ui/split_screen/components/split_member_item.dart';
+import 'package:bill_splitter/utils/extensions.dart';
 import 'package:bill_splitter/widgets/progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,7 +33,7 @@ class SplitScreen extends StatelessWidget {
         } else if (state is SplitSuccess) {
           ProgressDialogUtils.dismissProgressDialog();
           Navigator.pop(context, true);
-          showMessageDialog(context, "Successfully added");
+          showMessageDialog(context, "Done!", isError: false);
         } else if (state is SplitError) {
           showMessageDialog(context, state.errorMessage);
         }
@@ -46,9 +48,20 @@ class SplitScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Split",
-                        style: h3().copyWith(fontSize: 20),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.keyboard_backspace,
+                            color: MyColor.black_800,
+                          ).onClick(() {
+                            Navigator.pop(context);
+                          }),
+                          addHorizontalSpacing(10),
+                          Text(
+                            "Split",
+                            style: h3().copyWith(fontSize: 20),
+                          ),
+                        ],
                       ),
                       addVerticalSpacing(30),
                       CommonTextField(

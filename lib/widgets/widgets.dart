@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
+import 'package:bill_splitter/styles/app_images.dart';
 import 'package:flutter/material.dart';
 
 import '../styles/colors.dart';
@@ -97,10 +97,27 @@ Widget commonButton(String text, BuildContext context, Function() onTap) {
   );
 }
 
-Future showMessageDialog(BuildContext context, String message) {
+Future showMessageDialog(BuildContext context, String message,
+    {bool isError = true}) {
   return showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(content: Text(message));
+        return AlertDialog(
+            content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              isError ? AppImages.warning : AppImages.success,
+              width: 120,
+              height: 120,
+            ),
+            Text(isError ? "Error" : "Done!",
+                style: h3Bold().copyWith(color: MyColor.black_800)),
+            addVerticalSpacing(10),
+            Text(message, style: h5()),
+            addVerticalSpacing(10),
+          ],
+        ));
       });
 }

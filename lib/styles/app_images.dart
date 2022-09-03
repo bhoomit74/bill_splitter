@@ -5,4 +5,6 @@ class AppImages {
   static const receipt = "assets/images/receipt.png";
   static const profilePic = "assets/images/profile_pic.png";
   static const empty = "assets/images/empty.png";
+  static const warning = "assets/images/warning.png";
+  static const success = "assets/images/success.png";
 }

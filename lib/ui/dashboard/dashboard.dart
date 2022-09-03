@@ -7,7 +7,6 @@ import 'package:bill_splitter/styles/theme.dart';
 import 'package:bill_splitter/ui/dashboard/components/member_item.dart';
 import 'package:bill_splitter/ui/dashboard/components/transaction_item.dart';
 import 'package:bill_splitter/ui/split_screen/settle_up_screen.dart';
-import 'package:bill_splitter/ui/split_screen/split_screen.dart';
 import 'package:bill_splitter/ui/transaction_detail/transaction_detail.dart';
 import 'package:bill_splitter/utils/extensions.dart';
 import 'package:bill_splitter/widgets/common_check_box.dart';
@@ -21,6 +20,7 @@ import '../../widgets/bottom_sheet.dart';
 import '../../widgets/progress_dialog.dart';
 import '../../widgets/widgets.dart';
 import '../sign_in/sign_in.dart';
+import '../split_screen/split_screen.dart';
 
 class Dashboard extends StatefulWidget {
   static const String routeName = "dashboardScreen";
@@ -390,7 +390,12 @@ class _DashboardState extends State<Dashboard> {
                 if (index > 0) {
                   settleUpMember = member;
                   selectedGroup = cubit.group;
-                  Navigator.pushNamed(context, SettleUpScreen.routeName);
+                  Navigator.pushNamed(context, SettleUpScreen.routeName)
+                      .then((value) {
+                    if (value == true) {
+                      cubit.getUserDetail();
+                    }
+                  });
                 }
               });
             }),
@@ -439,7 +444,7 @@ class _DashboardState extends State<Dashboard> {
               ),
             ],
           )
-        : Container(
+        : SizedBox(
             height: 300,
             width: double.maxFinite,
             child: Column(
