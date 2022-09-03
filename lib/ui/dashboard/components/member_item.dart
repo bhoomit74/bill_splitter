@@ -68,8 +68,9 @@ class _MemberBarItemState extends State<MemberBarItem> {
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color:
-                        haveNegativeAmount ? MyColor.orange : MyColor.blue_600),
+                    color: haveNegativeAmount
+                        ? Colors.deepOrangeAccent
+                        : MyColor.blue_700),
                 child: Container(
                   height: 46,
                   width: 46,
@@ -103,8 +104,8 @@ class _MemberBarItemState extends State<MemberBarItem> {
                 Center(
                   child: Text(
                     "${widget.groupMember.name}",
-                    style: h5()
-                        .copyWith(fontSize: 14, color: MyColor.primaryColor),
+                    style: h4Bold()
+                        .copyWith(fontSize: 14, color: MyColor.black_800),
                   ),
                 ),
                 addVerticalSpacing(5),
@@ -113,10 +114,10 @@ class _MemberBarItemState extends State<MemberBarItem> {
                     "${widget.groupMember.amount?.convertToRupee()}",
                     style: h5().copyWith(
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w800,
                         color: haveNegativeAmount
-                            ? MyColor.orange
-                            : MyColor.blue_600),
+                            ? Colors.deepOrangeAccent
+                            : MyColor.blue_700),
                   ),
                 ),
               ],

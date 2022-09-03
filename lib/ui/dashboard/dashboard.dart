@@ -8,7 +8,9 @@ import 'package:bill_splitter/ui/dashboard/components/member_item.dart';
 import 'package:bill_splitter/ui/dashboard/components/transaction_item.dart';
 import 'package:bill_splitter/ui/split_screen/settle_up_screen.dart';
 import 'package:bill_splitter/ui/split_screen/split_screen.dart';
+import 'package:bill_splitter/ui/transaction_detail/transaction_detail.dart';
 import 'package:bill_splitter/utils/extensions.dart';
+import 'package:bill_splitter/widgets/common_check_box.dart';
 import 'package:bill_splitter/widgets/common_text_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +66,9 @@ class _DashboardState extends State<Dashboard> {
         }
       },
       buildWhen: (context, state) {
-        return state is DashboardSuccess || state is DashboardLoading;
+        return state is DashboardSuccess ||
+            state is DashboardLoading ||
+            state is GroupNotFound;
       },
       builder: (context, state) {
         return Scaffold(
@@ -79,9 +83,9 @@ class _DashboardState extends State<Dashboard> {
               },
               child: cubit.group != null
                   ? dashboardWidget()
-                  : state is DashboardLoading
-                      ? Container()
-                      : newUser(),
+                  : state is GroupNotFound
+                      ? newUser()
+                      : Container(),
             ),
           ),
         );
@@ -147,6 +151,61 @@ class _DashboardState extends State<Dashboard> {
         ));
   }
 
+  showGroupsSheet() {
+    var groups = cubit.userGroupList;
+    CustomBottomSheet().showSheet(
+        context,
+        Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              addVerticalSpacing(10),
+              Text(
+                "Groups",
+                style: h3Bold().copyWith(fontSize: 20),
+              ),
+              addVerticalSpacing(20),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: groups.length,
+                  itemBuilder: (context, index) {
+                    var group = groups[index];
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: MyColor.white_800),
+                      child: Row(
+                        children: [
+                          MyCheckBox(
+                              defaultValue:
+                                  group.groupId == cubit.group?.groupId,
+                              onChange: (isChecked) {
+                                Navigator.pop(context);
+                                cubit.fetchGroup(group.groupId);
+                              }),
+                          addHorizontalSpacing(20),
+                          Text(group.groupName.toString(),
+                              style: h3().copyWith(
+                                  fontSize: 16, color: MyColor.black_800))
+                        ],
+                      ),
+                    ).onClick(() {
+                      Navigator.pop(context);
+                      cubit.fetchGroup(group.groupId);
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ));
+  }
+
   AppBar _appBar() {
     return AppBar(
         title: Text(
@@ -197,29 +256,47 @@ class _DashboardState extends State<Dashboard> {
           _drawerHeader(),
           addVerticalSpacing(10),
           ListTile(
-            leading: const Icon(
+            leading: Icon(
               CupertinoIcons.home,
+              color: MyColor.black_800,
             ),
-            title: const Text('Dashboard'),
+            title: Text('Dashboard', style: h3Bold().copyWith(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
             },
           ),
-          ListTile(
-            leading: const Icon(
-              CupertinoIcons.group,
+          Visibility(
+            visible: cubit.group != null,
+            child: ListTile(
+              leading: Icon(
+                CupertinoIcons.arrow_2_squarepath,
+                color: MyColor.black_800,
+              ),
+              title:
+                  Text('Change group', style: h3Bold().copyWith(fontSize: 16)),
+              onTap: () {
+                Navigator.pop(context);
+                showGroupsSheet();
+              },
             ),
-            title: const Text('Create group'),
+          ),
+          ListTile(
+            leading: Icon(
+              CupertinoIcons.group_solid,
+              color: MyColor.black_800,
+            ),
+            title: Text('Create group', style: h3Bold().copyWith(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
               showCreateGroupSheet();
             },
           ),
           ListTile(
-            leading: const Icon(
+            leading: Icon(
               CupertinoIcons.square_arrow_left,
+              color: MyColor.black_800,
             ),
-            title: const Text('Logout'),
+            title: Text('Logout', style: h3Bold().copyWith(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
               cubit.logout();
@@ -232,28 +309,42 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _drawerHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
           gradient: LinearGradient(colors: [
-        Colors.black,
-        MyColor.black_800.withOpacity(0.8),
+        MyColor.blue_700,
+        MyColor.blue_700,
+        MyColor.blue_800,
       ])),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            CupertinoIcons.person_alt_circle_fill,
-            color: MyColor.white_800,
-            size: 80,
+          Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.asset(
+                  fit: BoxFit.cover,
+                  AppImages.profilePic,
+                  width: 60,
+                  height: 60,
+                ),
+              ),
+              addHorizontalSpacing(10),
+              Text(cubit.username,
+                  style: h4Bold()
+                      .copyWith(fontSize: 18, color: MyColor.white_800)),
+            ],
           ),
-          addVerticalSpacing(5),
-          Text(cubit.username,
-              style: h3Bold().copyWith(fontSize: 18, color: MyColor.white_800)),
           addVerticalSpacing(20),
-          buttonSmall(cubit.userId, () {}),
-          addVerticalSpacing(10),
+          buttonSmall(cubit.userId, () async {
+            await FlutterShare.share(
+                title: "Share member id",
+                text: cubit.userId,
+                chooserTitle: 'TITLE');
+          }),
         ],
       ),
     );
@@ -279,7 +370,7 @@ class _DashboardState extends State<Dashboard> {
     var groupMembers = cubit.group?.members ?? [];
     return Flexible(
       child: SizedBox(
-        height: 300,
+        height: 280,
         child: ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
@@ -288,14 +379,19 @@ class _DashboardState extends State<Dashboard> {
               var member = groupMembers[index];
               var heightPercentage =
                   ((member.amount ?? 0) / cubit.maxAmount.toInt()).abs();
+              if (heightPercentage.isNaN) {
+                heightPercentage = 0;
+              }
               return MemberBarItem(
                       key: UniqueKey(),
                       groupMember: member,
                       heightPercentage: heightPercentage)
                   .onClick(() {
-                settleUpMember = member;
-                selectedGroup = cubit.group;
-                Navigator.pushNamed(context, SettleUpScreen.routeName);
+                if (index > 0) {
+                  settleUpMember = member;
+                  selectedGroup = cubit.group;
+                  Navigator.pushNamed(context, SettleUpScreen.routeName);
+                }
               });
             }),
       ),
@@ -304,43 +400,66 @@ class _DashboardState extends State<Dashboard> {
 
   Widget transactionsList() {
     var transactions = cubit.group?.transactions ?? [];
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Transactions", style: h3().copyWith(fontSize: 16)),
-            Text(
-              "Total amount: ${cubit.getTotalTransactionAmount().convertToRupee()}",
-              style: h5().copyWith(
-                  color: MyColor.primaryColor, fontWeight: FontWeight.w400),
-            )
-          ],
-        ),
-        addVerticalSpacing(10),
-        Flexible(
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: transactions.length,
-            itemBuilder: (context, index) {
-              var transaction = transactions[index];
-              return TransactionItem(transaction: transaction);
-            },
-            separatorBuilder: (context, index) {
-              return index != transactions.length
-                  ? Divider(
-                      thickness: 1,
-                      color: MyColor.white_800,
-                    )
-                  : Container();
-            },
-          ),
-        ),
-      ],
-    );
+    return transactions.isNotEmpty
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              addVerticalSpacing(30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Transactions", style: h3().copyWith(fontSize: 16)),
+                  Text(
+                    "Total spending: ${cubit.getTotalTransactionAmount().convertToRupee()}",
+                    style: h5().copyWith(
+                        color: MyColor.primaryColor,
+                        fontWeight: FontWeight.w400),
+                  )
+                ],
+              ),
+              addVerticalSpacing(16),
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: transactions.length,
+                  itemBuilder: (context, index) {
+                    var transaction = transactions[index];
+                    return TransactionItem(transaction: transaction)
+                        .onClick(() {
+                      glTransaction = transaction;
+                      Navigator.pushNamed(context, TransactionDetail.routeName);
+                    });
+                  },
+                  separatorBuilder: (context, index) {
+                    return Container();
+                  },
+                ),
+              ),
+            ],
+          )
+        : Container(
+            height: 300,
+            width: double.maxFinite,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  AppImages.empty,
+                  fit: BoxFit.cover,
+                  width: 120,
+                  height: 120,
+                ),
+                addVerticalSpacing(10),
+                Text(
+                  "transactions list is empty",
+                  style: h5(),
+                )
+              ],
+            ),
+          );
   }
 
   Widget newUser() {

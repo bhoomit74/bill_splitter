@@ -1,10 +1,12 @@
 import 'package:bill_splitter/models/group_member.dart';
 import 'package:bill_splitter/models/group_model.dart';
+import 'package:bill_splitter/models/transaction_model.dart';
 import 'package:bill_splitter/ui/onboarding/onboarding_screen.dart';
 import 'package:bill_splitter/ui/sign_in/sign_in.dart';
 import 'package:bill_splitter/ui/signup/signup.dart';
 import 'package:bill_splitter/ui/split_screen/settle_up_screen.dart';
 import 'package:bill_splitter/ui/split_screen/split_screen.dart';
+import 'package:bill_splitter/ui/transaction_detail/transaction_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ import 'ui/dashboard/dashboard.dart';
 
 GroupModel? selectedGroup;
 GroupMember? settleUpMember;
+SplitTransaction? glTransaction;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +46,9 @@ class MyApp extends StatelessWidget {
         SettleUpScreen.routeName: (context) =>
             SettleUpScreen(group: selectedGroup, member: settleUpMember),
         SplitScreen.splitScreenRoute: (context) =>
-            SplitScreen(group: selectedGroup)
+            SplitScreen(group: selectedGroup),
+        TransactionDetail.routeName: (context) =>
+            TransactionDetail(transaction: glTransaction!)
       },
     );
   }

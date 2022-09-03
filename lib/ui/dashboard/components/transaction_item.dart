@@ -2,6 +2,7 @@ import 'package:bill_splitter/models/transaction_model.dart';
 import 'package:bill_splitter/ui/dashboard/components/transaction_image.dart';
 import 'package:bill_splitter/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../../styles/colors.dart';
 import '../../../styles/spacing.dart';
@@ -16,14 +17,19 @@ class TransactionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-          color: MyColor.white_800, borderRadius: BorderRadius.circular(10)),
+          color: transaction.isSettleUpTransaction ?? false
+              ? Colors.green.withOpacity(0.1)
+              : MyColor.blue_700,
+          borderRadius: BorderRadius.circular(10)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           //addHorizontalSpacing(4),
-          TransactionImage(transaction: transaction),
+          TransactionImage(
+            name: transaction.transactionBy ?? "A",
+          ),
           addHorizontalSpacing(10),
           Expanded(
             child: Column(
@@ -33,20 +39,21 @@ class TransactionItem extends StatelessWidget {
                   transaction.transactionBy.toString(),
                   style: h5().copyWith(
                       fontSize: 16,
-                      color: MyColor.primaryColor,
-                      fontWeight: FontWeight.w400),
+                      color: MyColor.white_800,
+                      fontWeight: FontWeight.w500),
                 ),
-                addVerticalSpacing(4),
+                addVerticalSpacing(8),
                 Text(
                   transaction.transactionName.toString(),
-                  style: h5().copyWith(fontSize: 12),
+                  style: h5().copyWith(
+                      fontSize: 12, color: MyColor.white_800.withOpacity(0.8)),
                 )
               ],
             ),
           ),
           addHorizontalSpacing(10),
           Text(transaction.transactionAmount?.convertToRupee() ?? "",
-              style: h5().copyWith(fontSize: 16, color: MyColor.primaryColor)),
+              style: h5().copyWith(fontSize: 16, color: MyColor.white_800)),
           addHorizontalSpacing(4),
         ],
       ),

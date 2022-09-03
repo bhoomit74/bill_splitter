@@ -39,8 +39,11 @@ class CommonTextField extends StatelessWidget {
           hintText: hint,
           fillColor: MyColor.white_800,
           filled: true,
-          labelStyle:
-              h3Light().copyWith(fontSize: 16, color: MyColor.greyColor),
+          contentPadding: const EdgeInsets.all(18),
+          labelStyle: h3Light().copyWith(
+              fontSize: 16, color: MyColor.greyColor.withOpacity(0.8)),
+          hintStyle: h3Light().copyWith(
+              fontSize: 16, color: MyColor.greyColor.withOpacity(0.8)),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(color: MyColor.greyColor, width: 1)),

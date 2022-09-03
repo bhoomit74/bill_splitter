@@ -43,6 +43,8 @@ dependencies:
   uuid:
   flutter_advanced_drawer:
   flutter_share:
+  intl:
+  upi_india:
 
 dev_dependencies:
   flutter_test:

@@ -19,19 +19,25 @@ class DashboardCubit extends Cubit<DashboardState> {
   var userId = "";
   GroupModel? group;
   int maxAmount = 0;
-  DashboardCubit() : super(DashboardInitial());
+  List<GroupModel> userGroupList = [];
+  DashboardCubit() : super(DashboardLoading());
 
   Future<dynamic> getUserDetail() async {
     emit(DashboardLoading());
     userRef.child(firebaseAuth.currentUser?.uid ?? "").get().then((value) {
       username = value.child("name").value.toString();
       userId = value.child("id").value.toString();
-      if (kDebugMode) {
-        if (value.hasChild("groups")) {
-          fetchGroup(value.child("groups").children.first.key);
-        } else {
-          emit(GroupNotFound());
-        }
+      if (value.hasChild("groups")) {
+        userGroupList.clear();
+        value.child('groups').children.forEach((element) {
+          userGroupList.add(GroupModel(
+            groupId: element.child('id').value.toString(),
+            groupName: element.child('name').value.toString(),
+          ));
+        });
+        fetchGroup(value.child("groups").children.first.key);
+      } else {
+        emit(GroupNotFound());
       }
     }).onError((error, stackTrace) {
       emit(DashboardError(error.toString()));
@@ -46,10 +52,11 @@ class DashboardCubit extends Cubit<DashboardState> {
       allGroupRef.child(groupId).child("groupName").get().then((value) {
         var groupName = value.value.toString();
         print(groupName);
-        var group = {groupId: groupName};
+        var group = {"id": groupId, "name": groupName};
         userRef
             .child(firebaseAuth.currentUser!.uid)
             .child('groups')
+            .child(groupId)
             .set(group)
             .then((value) {
           var userId = firebaseAuth.currentUser?.uid ?? "";
@@ -90,24 +97,33 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   fetchGroup(groupId) {
+    state is! DashboardLoading ? emit(DashboardLoading()) : null;
     if (firebaseAuth.currentUser != null) {
       allGroupRef.child(groupId).get().then((value) {
         if (kDebugMode) {
           print(value.value.toString());
           List<GroupMember> members = [];
           value.child("members").children.forEach((element) {
-            members.add(GroupMember(
-                id: element.child("id").value.toString(),
-                name: element.child("name").value.toString(),
-                amount:
-                    double.parse(element.child("amount").value.toString())));
+            if (element.child('id').value.toString() == userId) {
+              members.insert(
+                  0,
+                  GroupMember(
+                      id: element.child("id").value.toString(),
+                      name: element.child("name").value.toString(),
+                      amount: double.parse(
+                          element.child("amount").value.toString())));
+            } else {
+              members.add(GroupMember(
+                  id: element.child("id").value.toString(),
+                  name: element.child("name").value.toString(),
+                  amount:
+                      double.parse(element.child("amount").value.toString())));
+            }
           });
           List<SplitTransaction> transactions = [];
           value.child("transactions").children.forEach((element) {
-            print("in transaction child");
             List<GroupMember> splitMembers = [];
             element.child("members").children.forEach((member) {
-              print("in member child");
               splitMembers.add(GroupMember(
                   id: member.child("id").value.toString(),
                   name: member.child("name").value.toString(),
@@ -127,10 +143,9 @@ class DashboardCubit extends Cubit<DashboardState> {
                 isSettleUpTransaction:
                     element.child("isSettleUpTransaction").value.toString() ==
                         "true",
-                members: []));
+                members: splitMembers));
           });
 
-          print("transactions Length : ${transactions.length}");
           group = GroupModel(
               groupName: value.child("groupName").value.toString(),
               groupId: value.key.toString(),

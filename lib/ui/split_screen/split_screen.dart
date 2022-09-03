@@ -52,16 +52,6 @@ class SplitScreen extends StatelessWidget {
                       ),
                       addVerticalSpacing(30),
                       CommonTextField(
-                        hint: "Spent on",
-                        controller: titleController,
-                      ),
-                      addVerticalSpacing(20),
-                      CommonTextField(
-                        hint: "Description",
-                        controller: descriptionController,
-                      ),
-                      addVerticalSpacing(20),
-                      CommonTextField(
                         hint: "Amount",
                         textInputType: TextInputType.number,
                         inputFormatter: <TextInputFormatter>[
@@ -71,6 +61,16 @@ class SplitScreen extends StatelessWidget {
                         onChanged: (value) {
                           cubit.changeTotalSplitAmount(value);
                         },
+                      ),
+                      addVerticalSpacing(20),
+                      CommonTextField(
+                        hint: "Amount spent on",
+                        controller: titleController,
+                      ),
+                      addVerticalSpacing(20),
+                      CommonTextField(
+                        hint: "Description (optional)",
+                        controller: descriptionController,
                       ),
                       addVerticalSpacing(20),
                       Flexible(

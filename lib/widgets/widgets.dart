@@ -45,18 +45,21 @@ Widget buttonFrostedGlass(String text, BuildContext context, Function() onTap) {
   );
 }
 
-Widget buttonSmall(String text, Function onTap) {
+Widget buttonSmall(String text, Function() onTap) {
   return GestureDetector(
+    onTap: onTap,
     child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+      width: double.maxFinite,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       decoration: BoxDecoration(
-          color: MyColor.white_800, borderRadius: BorderRadius.circular(12)),
+          color: MyColor.black_800, borderRadius: BorderRadius.circular(12)),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             text,
-            style: h5().copyWith(fontSize: 12),
+            style: h5().copyWith(fontSize: 12, color: MyColor.white_800),
           ),
           addHorizontalSpacing(10),
           Container(
@@ -67,9 +70,9 @@ Widget buttonSmall(String text, Function onTap) {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
-                Icons.copy,
+                Icons.share,
                 color: MyColor.white,
-                size: 10,
+                size: 14,
               ))
         ],
       ),
@@ -82,7 +85,7 @@ Widget commonButton(String text, BuildContext context, Function() onTap) {
     onTap: onTap,
     child: Container(
       width: double.maxFinite,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
       decoration: BoxDecoration(
           color: MyColor.primaryColor, borderRadius: BorderRadius.circular(10)),
       child: Center(
