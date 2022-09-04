@@ -1,4 +1,5 @@
 import 'package:bill_splitter/bloc/dashboard/dashboard_cubit.dart';
+import 'package:bill_splitter/models/group_member.dart';
 import 'package:bill_splitter/styles/app_images.dart';
 import 'package:bill_splitter/styles/app_strings.dart';
 import 'package:bill_splitter/styles/colors.dart';
@@ -372,12 +373,16 @@ class _DashboardState extends State<Dashboard> {
               if (heightPercentage.isNaN) {
                 heightPercentage = 0;
               }
+              var settleUpStatus = _getSettleUpStatus(index, member);
               return MemberBarItem(
                       key: UniqueKey(),
                       groupMember: member,
-                      heightPercentage: heightPercentage)
+                      heightPercentage: heightPercentage,
+                      settleUpStatus: settleUpStatus)
                   .onClick(() {
-                if (index > 0) {
+                if (settleUpStatus == 1) {
+                  _shareSettleUpRequest(member);
+                } else {
                   navSettleUpMember = member;
                   navGroup = cubit.group;
                   Navigator.pushNamed(context, SettleUpScreen.routeName)
@@ -498,5 +503,24 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  int _getSettleUpStatus(index, member) {
+    if (index == 0) {
+      return 0;
+    } else if (cubit.currentUserAmount > 0 &&
+        member.amount?.isNegative == true) {
+      return 1;
+    } else {
+      return 2;
+    }
+  }
+
+  _shareSettleUpRequest(GroupMember member) async {
+    await FlutterShare.share(
+        title: "Request for settle up",
+        text:
+            "Hello ${member.name}, Let's settle up our pending amount in group(${cubit.group?.groupName})",
+        chooserTitle: 'TITLE');
   }
 }

@@ -5,6 +5,7 @@ import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/spacing.dart';
 import 'package:bill_splitter/ui/dashboard/components/transaction_image.dart';
 import 'package:bill_splitter/utils/extensions.dart';
+import 'package:bill_splitter/utils/global_data.dart';
 import 'package:bill_splitter/widgets/header.dart';
 import 'package:flutter/material.dart';
 
@@ -105,7 +106,10 @@ class TransactionDetail extends StatelessWidget {
                               TransactionImage(
                                   name: members[index].name ?? "A"),
                               addHorizontalSpacing(10),
-                              Text("${members[index].name}",
+                              Text(
+                                  currentUserId == members[index].id
+                                      ? "You"
+                                      : "${members[index].name}",
                                   style: h4Bold().copyWith(
                                     fontSize: 16,
                                     color: MyColor.white_800,

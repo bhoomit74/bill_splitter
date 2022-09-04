@@ -1,4 +1,3 @@
-import 'package:bill_splitter/ui/onboarding/onboarding_screen.dart';
 import 'package:bill_splitter/ui/sign_in/sign_in.dart';
 import 'package:bill_splitter/ui/signup/signup.dart';
 import 'package:bill_splitter/ui/split_screen/settle_up_screen.dart';
@@ -34,7 +33,6 @@ class MyApp extends StatelessWidget {
           ? SignInScreen.routeName
           : Dashboard.routeName,
       routes: {
-        OnBoardingScreen.routeName: (context) => const OnBoardingScreen(),
         SignInScreen.routeName: (context) => SignInScreen(),
         SignUpScreen.routeName: (context) => SignUpScreen(),
         Dashboard.routeName: (context) => const Dashboard(),

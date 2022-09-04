@@ -1,7 +1,7 @@
 import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/theme.dart';
 import 'package:bill_splitter/utils/extensions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:bill_splitter/utils/global_data.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/group_member.dart';
@@ -10,8 +10,12 @@ import '../../../styles/spacing.dart';
 class MemberBarItem extends StatefulWidget {
   final GroupMember groupMember;
   final double heightPercentage;
+  final int settleUpStatus;
   const MemberBarItem(
-      {Key? key, required this.groupMember, required this.heightPercentage})
+      {Key? key,
+      required this.groupMember,
+      required this.heightPercentage,
+      required this.settleUpStatus})
       : super(key: key);
 
   @override
@@ -103,7 +107,9 @@ class _MemberBarItemState extends State<MemberBarItem> {
               children: [
                 Center(
                   child: Text(
-                    "${widget.groupMember.name}",
+                    currentUserId == widget.groupMember.id
+                        ? "You"
+                        : "${widget.groupMember.name}",
                     style: h4Bold()
                         .copyWith(fontSize: 14, color: MyColor.black_800),
                   ),
@@ -122,8 +128,7 @@ class _MemberBarItemState extends State<MemberBarItem> {
                 ),
                 addVerticalSpacing(5),
                 Visibility(
-                  visible: FirebaseAuth.instance.currentUser?.uid !=
-                      widget.groupMember.id,
+                  visible: widget.settleUpStatus != 0,
                   child: Center(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -133,7 +138,7 @@ class _MemberBarItemState extends State<MemberBarItem> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        "Settle up",
+                        widget.settleUpStatus == 1 ? "Request" : "Settle up",
                         style:
                             h5().copyWith(fontSize: 10, color: MyColor.white),
                       ),

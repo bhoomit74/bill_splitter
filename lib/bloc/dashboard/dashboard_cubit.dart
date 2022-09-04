@@ -17,6 +17,8 @@ class DashboardCubit extends Cubit<DashboardState> {
   var allGroupRef = FirebaseDatabase.instance.ref("allGroups");
   var username = "";
   var userId = "";
+  var currentUserAmount = 0.0;
+  var selectedGroupId;
   GroupModel? group;
   int maxAmount = 0;
   List<GroupModel> userGroupList = [];
@@ -35,7 +37,7 @@ class DashboardCubit extends Cubit<DashboardState> {
             groupName: element.child('name').value.toString(),
           ));
         });
-        fetchGroup(value.child("groups").children.first.key);
+        fetchGroup(selectedGroupId ?? value.child("groups").children.first.key);
       } else {
         emit(GroupNotFound());
       }
@@ -98,12 +100,15 @@ class DashboardCubit extends Cubit<DashboardState> {
   fetchGroup(groupId) {
     state is! DashboardLoading ? emit(DashboardLoading()) : null;
     if (firebaseAuth.currentUser != null) {
+      selectedGroupId = groupId;
       allGroupRef.child(groupId).get().then((value) {
         if (kDebugMode) {
           print(value.value.toString());
           List<GroupMember> members = [];
           value.child("members").children.forEach((element) {
             if (element.child('id').value.toString() == userId) {
+              currentUserAmount =
+                  double.parse(element.child("amount").value.toString());
               members.insert(
                   0,
                   GroupMember(
@@ -195,6 +200,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   Future<dynamic> logout() async {
     emit(DashboardLoading());
     firebaseAuth.signOut().then((value) {
+      selectedGroupId = null;
       emit(LogoutSuccess());
     }).onError((error, stackTrace) {
       emit(DashboardError(error.toString()));
