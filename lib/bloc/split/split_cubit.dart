@@ -1,10 +1,9 @@
 import 'package:bill_splitter/models/group_model.dart';
 import 'package:bill_splitter/models/transaction_model.dart';
-import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upi_india/upi_india.dart';
-import 'package:upi_india/upi_response.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../models/group_member.dart';
@@ -54,7 +53,7 @@ class SplitCubit extends Cubit<SplitState> {
       transactionMember.add(
           GroupMember(id: element.id, name: element.name, amount: splitAmount));
     });
-    var transactionId = Uuid().v4();
+    var transactionId = const Uuid().v4();
     var splitTransaction = SplitTransaction(
         transactionId: transactionId,
         transactionName: name,
@@ -173,7 +172,6 @@ class SplitCubit extends Cubit<SplitState> {
   }
 
   changeTotalSplitAmount(String amount) {
-    print("Total amount : ${amount}");
     try {
       if (amount.isNotEmpty) {
         if (amount.endsWith('.')) {

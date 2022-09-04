@@ -68,9 +68,7 @@ class _DashboardState extends State<Dashboard> {
         }
       },
       buildWhen: (context, state) {
-        return state is DashboardSuccess ||
-            state is DashboardLoading ||
-            state is GroupNotFound;
+        return state is DashboardSuccess || state is GroupNotFound;
       },
       builder: (context, state) {
         return Scaffold(
@@ -346,12 +344,10 @@ class _DashboardState extends State<Dashboard> {
       physics: const AlwaysScrollableScrollPhysics(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Flexible(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [memberBarGraph(), transactionsList()],
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [memberBarGraph(), transactionsList()],
         ),
       ),
     );
@@ -470,7 +466,7 @@ class _DashboardState extends State<Dashboard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(AppImages.onBoardingPage2),
+              Image.asset(AppImages.group),
               addVerticalSpacing(20),
               Text("Just one step away", style: h3Bold()),
               addVerticalSpacing(20),

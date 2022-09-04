@@ -7,4 +7,5 @@ class AppImages {
   static const empty = "assets/images/empty.png";
   static const warning = "assets/images/warning.png";
   static const success = "assets/images/success.png";
+  static const group = "assets/images/group.png";
 }

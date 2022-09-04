@@ -3,10 +3,9 @@ import 'dart:math';
 import 'package:bill_splitter/models/group_member.dart';
 import 'package:bill_splitter/models/group_model.dart';
 import 'package:bill_splitter/models/transaction_model.dart';
-import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 part 'dashboard_state.dart';
@@ -102,63 +101,59 @@ class DashboardCubit extends Cubit<DashboardState> {
     if (firebaseAuth.currentUser != null) {
       selectedGroupId = groupId;
       allGroupRef.child(groupId).get().then((value) {
-        if (kDebugMode) {
-          print(value.value.toString());
-          List<GroupMember> members = [];
-          value.child("members").children.forEach((element) {
-            if (element.child('id').value.toString() == userId) {
-              currentUserAmount =
-                  double.parse(element.child("amount").value.toString());
-              members.insert(
-                  0,
-                  GroupMember(
-                      id: element.child("id").value.toString(),
-                      name: element.child("name").value.toString(),
-                      amount: double.parse(
-                          element.child("amount").value.toString())));
-            } else {
-              members.add(GroupMember(
-                  id: element.child("id").value.toString(),
-                  name: element.child("name").value.toString(),
-                  amount:
-                      double.parse(element.child("amount").value.toString())));
-            }
+        List<GroupMember> members = [];
+        value.child("members").children.forEach((element) {
+          if (element.child('id').value.toString() == userId) {
+            currentUserAmount =
+                double.parse(element.child("amount").value.toString());
+            members.insert(
+                0,
+                GroupMember(
+                    id: element.child("id").value.toString(),
+                    name: element.child("name").value.toString(),
+                    amount: double.parse(
+                        element.child("amount").value.toString())));
+          } else {
+            members.add(GroupMember(
+                id: element.child("id").value.toString(),
+                name: element.child("name").value.toString(),
+                amount:
+                    double.parse(element.child("amount").value.toString())));
+          }
+        });
+        List<SplitTransaction> transactions = [];
+        value.child("transactions").children.forEach((element) {
+          List<GroupMember> splitMembers = [];
+          element.child("members").children.forEach((member) {
+            splitMembers.add(GroupMember(
+                id: member.child("id").value.toString(),
+                name: member.child("name").value.toString(),
+                amount: double.parse(member.child("amount").value.toString())));
           });
-          List<SplitTransaction> transactions = [];
-          value.child("transactions").children.forEach((element) {
-            List<GroupMember> splitMembers = [];
-            element.child("members").children.forEach((member) {
-              splitMembers.add(GroupMember(
-                  id: member.child("id").value.toString(),
-                  name: member.child("name").value.toString(),
-                  amount:
-                      double.parse(member.child("amount").value.toString())));
-            });
-            transactions.add(SplitTransaction(
-                transactionId: element.child("transactionId").value.toString(),
-                transactionName:
-                    element.child("transactionName").value.toString(),
-                transactionAmount: double.parse(
-                    element.child("transactionAmount").value.toString()),
-                transactionDescription:
-                    element.child("transactionDescription").value.toString(),
-                transactionBy: element.child("transactionBy").value.toString(),
-                time: int.parse(element.child("time").value.toString()),
-                isSettleUpTransaction:
-                    element.child("isSettleUpTransaction").value.toString() ==
-                        "true",
-                members: splitMembers));
-          });
+          transactions.add(SplitTransaction(
+              transactionId: element.child("transactionId").value.toString(),
+              transactionName:
+                  element.child("transactionName").value.toString(),
+              transactionAmount: double.parse(
+                  element.child("transactionAmount").value.toString()),
+              transactionDescription:
+                  element.child("transactionDescription").value.toString(),
+              transactionBy: element.child("transactionBy").value.toString(),
+              time: int.parse(element.child("time").value.toString()),
+              isSettleUpTransaction:
+                  element.child("isSettleUpTransaction").value.toString() ==
+                      "true",
+              members: splitMembers));
+        });
 
-          group = GroupModel(
-              groupName: value.child("groupName").value.toString(),
-              groupId: value.key.toString(),
-              members: members,
-              transactions: transactions);
-          List<double> amounts =
-              members.map((e) => e.amount?.abs() ?? 0).toList();
-          maxAmount = amounts.reduce(max).toInt();
-        }
+        group = GroupModel(
+            groupName: value.child("groupName").value.toString(),
+            groupId: value.key.toString(),
+            members: members,
+            transactions: transactions);
+        List<double> amounts =
+            members.map((e) => e.amount?.abs() ?? 0).toList();
+        maxAmount = amounts.reduce(max).toInt();
         emit(DashboardSuccess());
       }).onError((error, stackTrace) {
         emit(DashboardError(error.toString()));
