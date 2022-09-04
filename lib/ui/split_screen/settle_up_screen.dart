@@ -38,8 +38,7 @@ class SettleUpScreen extends StatelessWidget {
         } else if (state is SplitSuccess) {
           ProgressDialogUtils.dismissProgressDialog();
           Navigator.pop(context, true);
-          showMessageDialog(
-              context, "You have successfully settle up the amount",
+          showMessageDialog(context, AppStrings.messageSettleUpDone,
               isError: false);
         } else if (state is SplitError) {
           showMessageDialog(context, state.errorMessage);
@@ -67,8 +66,8 @@ class SettleUpScreen extends StatelessWidget {
                           }),
                           addHorizontalSpacing(10),
                           Text(
-                            "Settle Up",
-                            style: h3().copyWith(fontSize: 20),
+                            AppStrings.labelSettleUp,
+                            style: h3_20(),
                           ),
                         ],
                       ),
@@ -82,7 +81,7 @@ class SettleUpScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Pay via UPI",
+                              AppStrings.labelPayViaUPI,
                               style: h4Bold(),
                             ),
                             IconButton(
@@ -121,7 +120,7 @@ class SettleUpScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Pay via cash",
+                              AppStrings.labelPayViaCash,
                               style: h4Bold(),
                             ),
                             IconButton(
@@ -171,7 +170,7 @@ class SettleUpScreen extends StatelessWidget {
             children: [
               addVerticalSpacing(10),
               Text(
-                "Select UPI app",
+                AppStrings.labelSelectUPIApp,
                 style: h3Bold().copyWith(fontSize: 20),
               ),
               addVerticalSpacing(20),
@@ -210,7 +209,7 @@ class SettleUpScreen extends StatelessWidget {
       children: [
         addVerticalSpacing(30),
         CommonTextField(
-          hint: "Amount",
+          hint: AppStrings.labelAmount,
           controller: amountController,
           textInputType: TextInputType.number,
           inputFormatter: <TextInputFormatter>[
@@ -234,7 +233,7 @@ class SettleUpScreen extends StatelessWidget {
                       onCheckedChange: (isChecked) {});
                 })),
         addVerticalSpacing(20),
-        commonButton("Mark as Paid", context, () {
+        commonButton(AppStrings.labelMarkAsPaid, context, () {
           cubit.settleUp();
         })
       ],
@@ -251,7 +250,7 @@ class SettleUpScreen extends StatelessWidget {
       children: [
         addVerticalSpacing(20),
         CommonTextField(
-          hint: "Amount",
+          hint: AppStrings.labelAmount,
           controller: amountController,
           textInputType: TextInputType.number,
           inputFormatter: <TextInputFormatter>[
@@ -263,13 +262,13 @@ class SettleUpScreen extends StatelessWidget {
         ),
         addVerticalSpacing(10),
         CommonTextField(
-          hint: "Receiver UPI Id",
+          hint: AppStrings.labelReceiverUPIId,
           controller: upiIdController,
           textInputType: TextInputType.text,
         ),
         addVerticalSpacing(10),
         CommonTextField(
-          hint: "Note",
+          hint: AppStrings.labelNote,
           controller: noteController,
           textInputType: TextInputType.text,
         ),
@@ -287,7 +286,7 @@ class SettleUpScreen extends StatelessWidget {
                       onCheckedChange: (isChecked) {});
                 })),
         addVerticalSpacing(20),
-        commonButton("Pay via UPI", context, () {
+        commonButton(AppStrings.labelPayViaUPI, context, () {
           cubit.getUpiAppsFromMobile(upiIdController.text.trim().toString(),
               noteController.text.trim().toString());
         }),

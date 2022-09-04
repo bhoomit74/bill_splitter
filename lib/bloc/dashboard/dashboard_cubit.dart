@@ -51,7 +51,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     if (firebaseAuth.currentUser != null) {
       allGroupRef.child(groupId).child("groupName").get().then((value) {
         var groupName = value.value.toString();
-        print(groupName);
         var group = {"id": groupId, "name": groupName};
         userRef
             .child(firebaseAuth.currentUser!.uid)

@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/auth/auth_cubit.dart';
+import '../../styles/app_images.dart';
+import '../../styles/app_strings.dart';
 import '../../styles/theme.dart';
 import '../dashboard/dashboard.dart';
 
@@ -46,20 +48,32 @@ class SignUpScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(140),
+                          child: Image.asset(
+                            AppImages.profilePic,
+                            width: 140,
+                            height: 140,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      addVerticalSpacing(40),
                       Text(
-                        "Hey,",
+                        AppStrings.labelHey,
                         style: h3Bold(),
                       ),
                       addVerticalSpacing(6),
                       Text(
-                        "Register now.",
+                        AppStrings.labelRegisterNow,
                         style: h3Bold(),
                       ),
                       addVerticalSpacing(10),
                       Row(
                         children: [
                           Text(
-                            "If you already have account /",
+                            AppStrings.labelIfYouHaveAccount,
                             style: h3Light().copyWith(
                                 color: MyColor.black_800.withOpacity(0.5),
                                 fontSize: 16),
@@ -69,29 +83,30 @@ class SignUpScreen extends StatelessWidget {
                             onTap: () {
                               Navigator.pop(context);
                             },
-                            child: Text("Login",
-                                style: h3Bold().copyWith(fontSize: 16)),
+                            child: Text(AppStrings.labelLogin,
+                                style: h3Bold(
+                                    fontSize: 16, color: MyColor.blue_700)),
                           ),
                         ],
                       ),
-                      addVerticalSpacing(40),
+                      addVerticalSpacing(30),
                       CommonTextField(
                         controller: nameController,
-                        hint: "Your name",
+                        hint: AppStrings.labelYourName,
                       ),
                       addVerticalSpacing(20),
                       CommonTextField(
                         controller: emailController,
-                        hint: "Email",
+                        hint: AppStrings.labelEmail,
                       ),
                       addVerticalSpacing(20),
                       CommonTextField(
                         controller: passwordController,
-                        hint: "Password",
+                        hint: AppStrings.labelPassword,
                         obscureText: true,
                       ),
                       addVerticalSpacing(30),
-                      commonButton("Create account", context, () {
+                      commonButton(AppStrings.labelCreateAccount, context, () {
                         cubit.createAccount(
                             nameController.text.trim().toString(),
                             emailController.text.trim().toString(),

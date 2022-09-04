@@ -21,7 +21,7 @@ class TransactionImage extends StatelessWidget {
       child: Center(
         child: Text(
           name.characters.first.toUpperCase(),
-          style: h3().copyWith(color: MyColor.blue_700, fontSize: 20),
+          style: h3_20(color: MyColor.blue_700),
         ),
       ),
     );

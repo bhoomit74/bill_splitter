@@ -1,9 +1,11 @@
 import 'package:bill_splitter/models/transaction_model.dart';
 import 'package:bill_splitter/styles/app_images.dart';
+import 'package:bill_splitter/styles/app_strings.dart';
 import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/spacing.dart';
 import 'package:bill_splitter/ui/dashboard/components/transaction_image.dart';
 import 'package:bill_splitter/utils/extensions.dart';
+import 'package:bill_splitter/widgets/header.dart';
 import 'package:flutter/material.dart';
 
 import '../../styles/theme.dart';
@@ -20,11 +22,11 @@ class TransactionDetail extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Transaction detail", style: h3().copyWith(fontSize: 20)),
+              const AppHeader(title: AppStrings.labelTransactionDetail),
               addVerticalSpacing(30),
               Container(
                 decoration: BoxDecoration(
@@ -45,8 +47,7 @@ class TransactionDetail extends StatelessWidget {
                               style: h5().copyWith(
                                   color: MyColor.white, fontSize: 16)),
                           addVerticalSpacing(4),
-                          Text(
-                              "${transaction.transactionAmount?.convertToRupee()}",
+                          Text("${transaction.transactionAmount?.toRupee()}",
                               style: h2().copyWith(color: MyColor.white_800)),
                           addVerticalSpacing(2),
                           Text(
@@ -80,7 +81,8 @@ class TransactionDetail extends StatelessWidget {
                 ),
               ),
               addVerticalSpacing(30),
-              Text("Amount split between ${members.length} member",
+              Text(
+                  "${AppStrings.labelAmountSplitBetween} ${members.length} ${AppStrings.labelMember}",
                   style: h4Bold().copyWith(fontSize: 16)),
               addVerticalSpacing(10),
               Flexible(
@@ -94,7 +96,7 @@ class TransactionDetail extends StatelessWidget {
                         color: MyColor.blue_700,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      margin: EdgeInsets.symmetric(vertical: 4),
+                      margin: const EdgeInsets.symmetric(vertical: 4),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -110,7 +112,7 @@ class TransactionDetail extends StatelessWidget {
                                   )),
                             ],
                           ),
-                          Text("${members[index].amount?.convertToRupee()}",
+                          Text("${members[index].amount?.toRupee()}",
                               style: h5().copyWith(
                                   fontSize: 16, color: MyColor.white_800)),
                         ],

@@ -1,7 +1,6 @@
 import 'package:bill_splitter/models/transaction_model.dart';
 import 'package:bill_splitter/ui/dashboard/components/transaction_image.dart';
 import 'package:bill_splitter/utils/extensions.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../styles/colors.dart';
@@ -52,7 +51,7 @@ class TransactionItem extends StatelessWidget {
             ),
           ),
           addHorizontalSpacing(10),
-          Text(transaction.transactionAmount?.convertToRupee() ?? "",
+          Text(transaction.transactionAmount?.toRupee() ?? "",
               style: h5().copyWith(fontSize: 16, color: MyColor.white_800)),
           addHorizontalSpacing(4),
         ],

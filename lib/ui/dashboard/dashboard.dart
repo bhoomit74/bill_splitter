@@ -1,6 +1,6 @@
 import 'package:bill_splitter/bloc/dashboard/dashboard_cubit.dart';
-import 'package:bill_splitter/main.dart';
 import 'package:bill_splitter/styles/app_images.dart';
+import 'package:bill_splitter/styles/app_strings.dart';
 import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/spacing.dart';
 import 'package:bill_splitter/styles/theme.dart';
@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_share/flutter_share.dart';
 
+import '../../utils/global_data.dart';
 import '../../widgets/bottom_sheet.dart';
 import '../../widgets/progress_dialog.dart';
 import '../../widgets/widgets.dart';
@@ -105,16 +106,16 @@ class _DashboardState extends State<Dashboard> {
             children: [
               addVerticalSpacing(10),
               Text(
-                "Add Member",
+                AppStrings.labelAddMember,
                 style: h3Bold().copyWith(fontSize: 20),
               ),
               addVerticalSpacing(20),
               CommonTextField(
-                hint: "Member id",
+                hint: AppStrings.labelMemberId,
                 controller: controller,
               ),
               addVerticalSpacing(20),
-              commonButton("Add Member", context, () {
+              commonButton(AppStrings.labelAddMember, context, () {
                 cubit.addMemberInGroup(controller.text.toString());
               })
             ],
@@ -134,16 +135,16 @@ class _DashboardState extends State<Dashboard> {
             children: [
               addVerticalSpacing(10),
               Text(
-                "Create Group",
+                AppStrings.labelCreateGroup,
                 style: h3Bold().copyWith(fontSize: 20),
               ),
               addVerticalSpacing(20),
               CommonTextField(
-                hint: "Group name",
+                hint: AppStrings.labelGroupName,
                 controller: controller,
               ),
               addVerticalSpacing(20),
-              commonButton("Create group", context, () {
+              commonButton(AppStrings.labelCreateGroup, context, () {
                 cubit.createGroup(controller.text.toString());
               })
             ],
@@ -163,7 +164,7 @@ class _DashboardState extends State<Dashboard> {
             children: [
               addVerticalSpacing(10),
               Text(
-                "Groups",
+                AppStrings.labelGroups,
                 style: h3Bold().copyWith(fontSize: 20),
               ),
               addVerticalSpacing(20),
@@ -189,9 +190,7 @@ class _DashboardState extends State<Dashboard> {
                                 cubit.fetchGroup(group.groupId);
                               }),
                           addHorizontalSpacing(20),
-                          Text(group.groupName.toString(),
-                              style: h3().copyWith(
-                                  fontSize: 16, color: MyColor.black_800))
+                          Text(group.groupName.toString(), style: h3_16())
                         ],
                       ),
                     ).onClick(() {
@@ -209,8 +208,8 @@ class _DashboardState extends State<Dashboard> {
   AppBar _appBar() {
     return AppBar(
         title: Text(
-          "Dashboard",
-          style: h3().copyWith(fontSize: 20),
+          AppStrings.labelDashboard,
+          style: h3_20(),
         ),
         actions: [
           cubit.group != null
@@ -235,7 +234,7 @@ class _DashboardState extends State<Dashboard> {
     return cubit.group != null
         ? FloatingActionButton(
             onPressed: () {
-              selectedGroup = cubit.group;
+              navGroup = cubit.group;
               Navigator.pushNamed(context, SplitScreen.splitScreenRoute)
                   .then((value) {
                 if (value == true) {
@@ -255,55 +254,46 @@ class _DashboardState extends State<Dashboard> {
         children: [
           _drawerHeader(),
           addVerticalSpacing(10),
-          ListTile(
-            leading: Icon(
-              CupertinoIcons.home,
-              color: MyColor.black_800,
-            ),
-            title: Text('Dashboard', style: h3Bold().copyWith(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
+          _drawerItem(AppStrings.labelDashboard, CupertinoIcons.home, () {
+            Navigator.pop(context);
+          }),
           Visibility(
             visible: cubit.group != null,
-            child: ListTile(
-              leading: Icon(
-                CupertinoIcons.arrow_2_squarepath,
-                color: MyColor.black_800,
-              ),
-              title:
-                  Text('Change group', style: h3Bold().copyWith(fontSize: 16)),
-              onTap: () {
+            child: _drawerItem(
+              AppStrings.labelChangeGroup,
+              CupertinoIcons.arrow_2_squarepath,
+              () {
                 Navigator.pop(context);
                 showGroupsSheet();
               },
             ),
           ),
-          ListTile(
-            leading: Icon(
-              CupertinoIcons.group_solid,
-              color: MyColor.black_800,
-            ),
-            title: Text('Create group', style: h3Bold().copyWith(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-              showCreateGroupSheet();
-            },
-          ),
-          ListTile(
-            leading: Icon(
-              CupertinoIcons.square_arrow_left,
-              color: MyColor.black_800,
-            ),
-            title: Text('Logout', style: h3Bold().copyWith(fontSize: 16)),
-            onTap: () {
+          _drawerItem(AppStrings.labelCreateGroup, CupertinoIcons.group_solid,
+              () {
+            Navigator.pop(context);
+            showCreateGroupSheet();
+          }),
+          _drawerItem(
+            AppStrings.labelLogout,
+            CupertinoIcons.square_arrow_left,
+            () {
               Navigator.pop(context);
               cubit.logout();
             },
           )
         ],
       ),
+    );
+  }
+
+  Widget _drawerItem(String title, IconData icon, Function() onTap) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: MyColor.black_800,
+      ),
+      title: Text(title, style: h3Bold().copyWith(fontSize: 16)),
+      onTap: onTap,
     );
   }
 
@@ -388,8 +378,8 @@ class _DashboardState extends State<Dashboard> {
                       heightPercentage: heightPercentage)
                   .onClick(() {
                 if (index > 0) {
-                  settleUpMember = member;
-                  selectedGroup = cubit.group;
+                  navSettleUpMember = member;
+                  navGroup = cubit.group;
                   Navigator.pushNamed(context, SettleUpScreen.routeName)
                       .then((value) {
                     if (value == true) {
@@ -414,9 +404,9 @@ class _DashboardState extends State<Dashboard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Transactions", style: h3().copyWith(fontSize: 16)),
+                  Text(AppStrings.labelTransactions, style: h3_16()),
                   Text(
-                    "Total spending: ${cubit.getTotalTransactionAmount().convertToRupee()}",
+                    "${AppStrings.labelTotalSpending} ${cubit.getTotalTransactionAmount().toRupee()}",
                     style: h5().copyWith(
                         color: MyColor.primaryColor,
                         fontWeight: FontWeight.w400),
@@ -433,7 +423,7 @@ class _DashboardState extends State<Dashboard> {
                     var transaction = transactions[index];
                     return TransactionItem(transaction: transaction)
                         .onClick(() {
-                      glTransaction = transaction;
+                      navTransaction = transaction;
                       Navigator.pushNamed(context, TransactionDetail.routeName);
                     });
                   },
@@ -487,7 +477,8 @@ class _DashboardState extends State<Dashboard> {
               Row(
                 children: [
                   Flexible(
-                    child: commonButton("Create Group", context, () {
+                    child:
+                        commonButton(AppStrings.labelCreateGroup, context, () {
                       showCreateGroupSheet();
                     }),
                   ),

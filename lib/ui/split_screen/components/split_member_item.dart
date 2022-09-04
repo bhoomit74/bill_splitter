@@ -1,10 +1,9 @@
 import 'package:bill_splitter/models/group_member.dart';
 import 'package:bill_splitter/styles/spacing.dart';
+import 'package:bill_splitter/styles/theme.dart';
 import 'package:bill_splitter/utils/extensions.dart';
 import 'package:bill_splitter/widgets/common_check_box.dart';
 import 'package:flutter/material.dart';
-
-import '../../../styles/theme.dart';
 
 class SplitMemberItem extends StatelessWidget {
   final double splitAmount;
@@ -31,14 +30,14 @@ class SplitMemberItem extends StatelessWidget {
               MyCheckBox(
                   onChange: onCheckedChange, defaultValue: isChecked ?? true),
               addHorizontalSpacing(10),
-              Text(member?.name ?? "", style: h3().copyWith(fontSize: 16)),
+              Text(member?.name ?? "", style: h3_16()),
             ],
           ),
           Text(
               isChecked == true
-                  ? splitAmount.toDouble().convertToRupee()
-                  : (0.0).convertToRupee(),
-              style: h3().copyWith(fontSize: 14))
+                  ? splitAmount.toDouble().toRupee()
+                  : (0.0).toRupee(),
+              style: h3_16())
         ],
       ),
     );

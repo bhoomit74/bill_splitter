@@ -115,7 +115,11 @@ Future showMessageDialog(BuildContext context, String message,
             Text(isError ? "Error" : "Done!",
                 style: h3Bold().copyWith(color: MyColor.black_800)),
             addVerticalSpacing(10),
-            Text(message, style: h5()),
+            Text(
+              message,
+              style: h5(),
+              textAlign: TextAlign.center,
+            ),
             addVerticalSpacing(10),
           ],
         ));

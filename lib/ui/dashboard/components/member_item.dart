@@ -1,7 +1,7 @@
 import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/theme.dart';
 import 'package:bill_splitter/utils/extensions.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/group_member.dart';
@@ -111,13 +111,33 @@ class _MemberBarItemState extends State<MemberBarItem> {
                 addVerticalSpacing(5),
                 Center(
                   child: Text(
-                    "${widget.groupMember.amount?.convertToRupee()}",
+                    "${widget.groupMember.amount?.toRupee()}",
                     style: h5().copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: haveNegativeAmount
                             ? Colors.deepOrangeAccent
                             : MyColor.blue_700),
+                  ),
+                ),
+                addVerticalSpacing(5),
+                Visibility(
+                  visible: FirebaseAuth.instance.currentUser?.uid !=
+                      widget.groupMember.id,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 2, horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        "Settle up",
+                        style:
+                            h5().copyWith(fontSize: 10, color: MyColor.white),
+                      ),
+                    ),
                   ),
                 ),
               ],

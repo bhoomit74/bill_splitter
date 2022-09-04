@@ -12,7 +12,7 @@ extension ClickListener on Widget {
 }
 
 extension ConvertToRupee on double {
-  String convertToRupee() {
+  String toRupee() {
     if (isNegative) {
       return "- \u{20B9}${abs().toStringAsFixed(truncateToDouble() == this ? 0 : 1)}";
     }

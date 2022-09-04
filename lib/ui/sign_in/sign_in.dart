@@ -1,3 +1,5 @@
+import 'package:bill_splitter/styles/app_images.dart';
+import 'package:bill_splitter/styles/app_strings.dart';
 import 'package:bill_splitter/styles/colors.dart';
 import 'package:bill_splitter/styles/spacing.dart';
 import 'package:bill_splitter/ui/signup/signup.dart';
@@ -40,55 +42,73 @@ class SignInScreen extends StatelessWidget {
           body: SafeArea(
             child: Container(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Hey,",
-                    style: h3Bold(),
-                  ),
-                  addVerticalSpacing(6),
-                  Text(
-                    "Login Now.",
-                    style: h3Bold(),
-                  ),
-                  addVerticalSpacing(10),
-                  Row(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(140),
+                          child: Image.asset(
+                            AppImages.profilePic,
+                            width: 140,
+                            height: 140,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      addVerticalSpacing(40),
                       Text(
-                        "If you are new /",
-                        style: h3Light().copyWith(
-                            color: MyColor.black_800.withOpacity(0.5),
-                            fontSize: 16),
+                        AppStrings.labelHey,
+                        style: h3Bold(),
                       ),
-                      addHorizontalSpacing(6),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, SignUpScreen.routeName);
-                        },
-                        child: Text("Create account",
-                            style: h3Bold().copyWith(fontSize: 16)),
+                      addVerticalSpacing(6),
+                      Text(
+                        AppStrings.labelWelcomeBack,
+                        style: h3Bold(),
                       ),
+                      addVerticalSpacing(10),
+                      Row(
+                        children: [
+                          Text(
+                            AppStrings.labelIfYouAreNew,
+                            style: h3Light().copyWith(
+                                color: MyColor.black_800.withOpacity(0.5),
+                                fontSize: 16),
+                          ),
+                          addHorizontalSpacing(6),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, SignUpScreen.routeName);
+                            },
+                            child: Text(AppStrings.labelCreateAccount,
+                                style: h3Bold(
+                                    color: MyColor.blue_700, fontSize: 16)),
+                          ),
+                        ],
+                      ),
+                      addVerticalSpacing(30),
+                      CommonTextField(
+                        controller: emailController,
+                        hint: AppStrings.labelEmail,
+                      ),
+                      addVerticalSpacing(20),
+                      CommonTextField(
+                        controller: passwordController,
+                        hint: AppStrings.labelPassword,
+                        obscureText: true,
+                      ),
+                      addVerticalSpacing(30),
+                      commonButton(AppStrings.labelLogin, context, () {
+                        cubit.login(emailController.text.trim().toString(),
+                            passwordController.text.trim().toString());
+                      })
                     ],
                   ),
-                  addVerticalSpacing(40),
-                  CommonTextField(
-                    controller: emailController,
-                    hint: "Email",
-                  ),
-                  addVerticalSpacing(20),
-                  CommonTextField(
-                    controller: passwordController,
-                    hint: "Password",
-                    obscureText: true,
-                  ),
-                  addVerticalSpacing(30),
-                  commonButton("Login", context, () {
-                    cubit.login(emailController.text.trim().toString(),
-                        passwordController.text.trim().toString());
-                  })
-                ],
+                ),
               ),
             ),
           ),
