@@ -8,7 +8,7 @@ class GroupMember {
   GroupMember.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    amount = json['amount'];
+    amount = double.parse(json['amount'].toString());
   }
 
   Map<String, dynamic> toJson() {
@@ -17,5 +17,12 @@ class GroupMember {
     data['name'] = name;
     data['amount'] = amount;
     return data;
+  }
+
+  GroupMember copyWith({String? id, String? name, double? amount}) {
+    return GroupMember(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        amount: amount ?? this.amount);
   }
 }

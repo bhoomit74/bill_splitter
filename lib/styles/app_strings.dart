@@ -44,3 +44,5 @@ class AppStrings {
 }
 
 enum PaymentMethod { upi, cash }
+
+List<String> appKeyword = ["users", "groups", "members", "transactions"];

@@ -10,8 +10,8 @@ class GroupModel {
   GroupModel({this.groupId, this.groupName, this.members, this.transactions});
 
   GroupModel.fromJson(Map<String, dynamic> json) {
-    groupId = json['groupId'] ?? "";
-    groupName = json['groupName'] ?? "";
+    groupId = json['id'] ?? "";
+    groupName = json['name'] ?? "";
     if (json['members'] != null) {
       members = <GroupMember>[];
       json['members'].forEach((v) {
@@ -30,8 +30,8 @@ class GroupModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['groupId'] = groupId;
-    data['groupName'] = groupName;
+    data['id'] = groupId;
+    data['name'] = groupName;
     if (members != null) {
       data['members'] = members!.map((v) => v.toJson()).toList();
     }

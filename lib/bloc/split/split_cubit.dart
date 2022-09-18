@@ -7,6 +7,7 @@ import 'package:upi_india/upi_india.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../models/group_member.dart';
+import '../../network/firebase_reference.dart';
 import '../../styles/app_strings.dart';
 
 part 'split_state.dart';
@@ -22,6 +23,7 @@ class SplitCubit extends Cubit<SplitState> {
   bool payViaUPI = true;
   String upiId = "";
   String note = "";
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
   var allGroupRef = FirebaseDatabase.instance.ref("allGroups");
 
@@ -30,8 +32,8 @@ class SplitCubit extends Cubit<SplitState> {
       splitMembers.addAll(group?.members ?? []);
     } else {
       splitMembers.add(settleMember!);
-      GroupMember? member = group?.members?.singleWhere(
-          (element) => FirebaseAuth.instance.currentUser?.uid == element.id);
+      GroupMember? member = group?.members
+          ?.singleWhere((element) => currentUser?.uid == element.id);
       if (member != null) {
         changeTotalSplitAmount(member.amount?.abs().toString() ?? "0");
       }
@@ -44,40 +46,32 @@ class SplitCubit extends Cubit<SplitState> {
       element.amount = (element.amount ?? 0) - splitAmount;
     }
     group?.members?.forEach((element) {
-      if (element.id == FirebaseAuth.instance.currentUser?.uid) {
+      if (element.id == currentUser?.uid) {
         element.amount = (element.amount ?? 0) + totalSplitAmount;
       }
     });
     List<GroupMember> transactionMember = [];
-    splitMembers.forEach((element) {
-      transactionMember.add(
-          GroupMember(id: element.id, name: element.name, amount: splitAmount));
-    });
+    for (var element in splitMembers) {
+      transactionMember.add(element.copyWith(amount: splitAmount));
+    }
     var transactionId = const Uuid().v4();
     var splitTransaction = SplitTransaction(
         transactionId: transactionId,
         transactionName: name,
         transactionDescription: desc,
         transactionAmount: totalSplitAmount,
-        transactionBy: FirebaseAuth.instance.currentUser?.displayName,
+        transactionBy: currentUser?.displayName,
         time: DateTime.now().microsecondsSinceEpoch,
         isSettleUpTransaction: isSettleUpTransaction,
         members: transactionMember);
 
-    /*group?.transactions ??= [];
-    group?.transactions?.add(splitTransaction);
-    group?.members?.forEach((element) {
-      print("${element.name} : ${element.amount}");
-    });
-    group?.transactions?.forEach((element) {
-      print("${element.transactionName} ${element.transactionAmount}");
-    });*/
     Map<String, dynamic> update = {};
     group?.members?.forEach((element) {
       update["members/${element.id}/amount"] = element.amount;
     });
     update["transactions/$transactionId"] = splitTransaction.toJson();
-    allGroupRef.child(group?.groupId ?? "0").update(update).then((value) {
+
+    Reference.groups.child(group?.groupId ?? "0").update(update).then((value) {
       emit(SplitSuccess());
     }).onError((error, stackTrace) {
       emit(SplitError(error.toString()));
@@ -86,9 +80,9 @@ class SplitCubit extends Cubit<SplitState> {
 
   settleUp() {
     var title =
-        "${FirebaseAuth.instance.currentUser?.displayName} settle up with ${settleMember?.name}";
+        "${currentUser?.displayName} settle up with ${settleMember?.name}";
     var description =
-        "${FirebaseAuth.instance.currentUser?.displayName} Paid money to ${settleMember?.name} for settle up";
+        "${currentUser?.displayName} Paid money to ${settleMember?.name} for settle up";
     addSplit(title, description, isSettleUpTransaction: true);
   }
 
@@ -139,17 +133,16 @@ class SplitCubit extends Cubit<SplitState> {
             emit(PaymentSubmitted());
             break;
           default:
-            print("An Unknown error has occurred");
             break;
         }
       });
-    } on UpiIndiaAppNotInstalledException catch (e, ex) {
+    } on UpiIndiaAppNotInstalledException catch (_) {
       emit(SplitError("UPI app not installed in your mobile"));
-    } on UpiIndiaUserCancelledException catch (e, _) {
+    } on UpiIndiaUserCancelledException catch (_) {
       emit(SplitError("You have cancelled the transaction"));
-    } on UpiIndiaNullResponseException catch (e, _) {
+    } on UpiIndiaNullResponseException catch (_) {
       emit(SplitError("Requested app didn't return any response"));
-    } on UpiIndiaAppsGetException catch (e, _) {
+    } on UpiIndiaAppsGetException catch (_) {
       emit(SplitError("An Unknown error has occurred"));
     }
   }

@@ -25,7 +25,7 @@ class SplitTransaction {
     transactionName = json['transactionName'];
     transactionDescription = json['transactionDescription'];
     transactionBy = json['transactionBy'];
-    transactionAmount = json['transactionAmount'];
+    transactionAmount = double.parse(json['transactionAmount'].toString());
     time = json['time'];
     isSettleUpTransaction = json['isSettleUpTransaction'];
     if (json['members'] != null) {

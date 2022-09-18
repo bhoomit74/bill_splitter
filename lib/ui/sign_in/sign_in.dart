@@ -1,7 +1,3 @@
-import 'package:bill_splitter/styles/app_images.dart';
-import 'package:bill_splitter/styles/app_strings.dart';
-import 'package:bill_splitter/styles/colors.dart';
-import 'package:bill_splitter/styles/spacing.dart';
 import 'package:bill_splitter/ui/signup/signup.dart';
 import 'package:bill_splitter/widgets/common_text_field.dart';
 import 'package:bill_splitter/widgets/progress_dialog.dart';
@@ -10,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/auth/auth_cubit.dart';
-import '../../styles/theme.dart';
+import '../../styles/styles.dart';
 import '../dashboard/dashboard.dart';
 
 class SignInScreen extends StatelessWidget {

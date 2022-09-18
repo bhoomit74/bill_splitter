@@ -1,3 +1,5 @@
+import 'package:bill_splitter/styles/app_strings.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -39,5 +41,24 @@ extension TimestampToTIme on int? {
     } else {
       return "";
     }
+  }
+}
+
+extension SnapshotToMap on DataSnapshot {
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    for (var element in children) {
+      if (!appKeyword.contains(element.key) && element.value != null) {
+        map["${element.key}"] = element.value;
+      } else {
+        var list = [];
+        for (var element1 in element.children) {
+          list.add(element1.toMap());
+        }
+        map[element.key ?? ""] = list;
+      }
+    }
+    print("Map : ${map}");
+    return map;
   }
 }

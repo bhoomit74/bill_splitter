@@ -1,23 +1,21 @@
 import 'dart:math';
 
+import 'package:bill_splitter/models/group_basic_info.dart';
 import 'package:bill_splitter/models/group_member.dart';
 import 'package:bill_splitter/models/group_model.dart';
-import 'package:bill_splitter/models/transaction_model.dart';
+import 'package:bill_splitter/models/user.dart';
+import 'package:bill_splitter/network/firebase_reference.dart';
+import 'package:bill_splitter/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 part 'dashboard_state.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
-  var firebaseAuth = FirebaseAuth.instance;
-  var userRef = FirebaseDatabase.instance.ref("user");
-  var allGroupRef = FirebaseDatabase.instance.ref("allGroups");
-  var username = "";
-  var userId = "";
+  var currentUser = FirebaseAuth.instance.currentUser;
   var currentUserAmount = 0.0;
-  var selectedGroupId;
+  String? selectedGroupId;
   GroupModel? group;
   int maxAmount = 0;
   List<GroupModel> userGroupList = [];
@@ -25,139 +23,75 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   Future<dynamic> getUserDetail() async {
     emit(DashboardLoading());
-    userRef.child(firebaseAuth.currentUser?.uid ?? "").get().then((value) {
-      username = value.child("name").value.toString();
-      userId = value.child("id").value.toString();
-      if (value.hasChild("groups")) {
-        userGroupList.clear();
-        value.child('groups').children.forEach((element) {
-          userGroupList.add(GroupModel(
-            groupId: element.child('id').value.toString(),
-            groupName: element.child('name').value.toString(),
-          ));
-        });
-        fetchGroup(selectedGroupId ?? value.child("groups").children.first.key);
-      } else {
-        emit(GroupNotFound());
-      }
-    }).onError((error, stackTrace) {
-      emit(DashboardError(error.toString()));
-    });
+    var userSnapShot =
+        await Reference.users.child(currentUser?.uid ?? "").get();
+    var userMap = userSnapShot.toMap();
+    var user = AppUser.fromJson(userMap);
+    if (user.groups == null || user.groups!.isEmpty) {
+      emit(GroupNotFound());
+    } else {
+      fetchGroup(selectedGroupId ?? user.groups?.first.id);
+    }
   }
 
-  joinGroup(groupId) {
+  joinGroup(GroupBasicInfo group) async {
     state is! DashboardLoading
         ? emit(DashboardLoading())
         : emit(DashboardInitial());
-    if (firebaseAuth.currentUser != null) {
-      allGroupRef.child(groupId).child("groupName").get().then((value) {
-        var groupName = value.value.toString();
-        var group = {"id": groupId, "name": groupName};
-        userRef
-            .child(firebaseAuth.currentUser!.uid)
+    if (currentUser != null) {
+      var userId = currentUser?.uid ?? "";
+      try {
+        //add groupInfo to user
+        await Reference.users
+            .child(userId)
             .child('groups')
-            .child(groupId)
-            .set(group)
-            .then((value) {
-          var userId = firebaseAuth.currentUser?.uid ?? "";
-          var member = GroupMember(
-                  name: firebaseAuth.currentUser?.displayName ?? "",
-                  id: userId,
-                  amount: 0)
-              .toJson();
-          allGroupRef
-              .child(groupId)
-              .child("members")
-              .child(userId)
-              .set(member)
-              .then((value) {
-            emit(MemberJoined());
-            getUserDetail();
-          }).onError((error, stackTrace) {
-            emit(DashboardError(error.toString()));
-          });
-        }).onError((error, stackTrace) {
-          emit(DashboardError(error.toString()));
-        });
-      });
+            .child(userId)
+            .set(group.toJson());
+
+        //add member in group
+        var member = GroupMember(
+          name: currentUser?.displayName ?? "",
+          id: userId,
+          amount: 0,
+        ).toJson();
+        await Reference.groups
+            .child(group.id ?? "1")
+            .child("members")
+            .child(userId)
+            .set(member);
+        emit(MemberJoined());
+        getUserDetail();
+      } on FirebaseException catch (e) {
+        emit(DashboardError(e.toString()));
+      }
     }
   }
 
-  createGroup(String groupName) {
+  createGroup(String groupName) async {
     emit(DashboardLoading());
-    if (firebaseAuth.currentUser != null) {
+    if (currentUser != null) {
       var groupId = const Uuid().v4();
-      var group = GroupModel(groupId: groupId, groupName: groupName).toJson();
-      allGroupRef.child(groupId).set(group).then((value) {
-        joinGroup(groupId);
-      }).onError((error, stackTrace) {
-        emit(DashboardError(error.toString()));
-      });
+      var groupBasicInfo = GroupBasicInfo(id: groupId, name: groupName);
+      try {
+        await Reference.groups.child(groupId).set(groupBasicInfo.toJson());
+        await joinGroup(groupBasicInfo);
+      } on FirebaseException catch (e) {
+        emit(DashboardError(e.message ?? ""));
+      }
     }
   }
 
-  fetchGroup(groupId) {
+  fetchGroup(groupId) async {
     state is! DashboardLoading ? emit(DashboardLoading()) : null;
-    if (firebaseAuth.currentUser != null) {
+    if (currentUser != null) {
       selectedGroupId = groupId;
-      allGroupRef.child(groupId).get().then((value) {
-        List<GroupMember> members = [];
-        value.child("members").children.forEach((element) {
-          if (element.child('id').value.toString() == userId) {
-            currentUserAmount =
-                double.parse(element.child("amount").value.toString());
-            members.insert(
-                0,
-                GroupMember(
-                    id: element.child("id").value.toString(),
-                    name: element.child("name").value.toString(),
-                    amount: double.parse(
-                        element.child("amount").value.toString())));
-          } else {
-            members.add(GroupMember(
-                id: element.child("id").value.toString(),
-                name: element.child("name").value.toString(),
-                amount:
-                    double.parse(element.child("amount").value.toString())));
-          }
-        });
-        List<SplitTransaction> transactions = [];
-        value.child("transactions").children.forEach((element) {
-          List<GroupMember> splitMembers = [];
-          element.child("members").children.forEach((member) {
-            splitMembers.add(GroupMember(
-                id: member.child("id").value.toString(),
-                name: member.child("name").value.toString(),
-                amount: double.parse(member.child("amount").value.toString())));
-          });
-          transactions.add(SplitTransaction(
-              transactionId: element.child("transactionId").value.toString(),
-              transactionName:
-                  element.child("transactionName").value.toString(),
-              transactionAmount: double.parse(
-                  element.child("transactionAmount").value.toString()),
-              transactionDescription:
-                  element.child("transactionDescription").value.toString(),
-              transactionBy: element.child("transactionBy").value.toString(),
-              time: int.parse(element.child("time").value.toString()),
-              isSettleUpTransaction:
-                  element.child("isSettleUpTransaction").value.toString() ==
-                      "true",
-              members: splitMembers));
-        });
-
-        group = GroupModel(
-            groupName: value.child("groupName").value.toString(),
-            groupId: value.key.toString(),
-            members: members,
-            transactions: transactions);
-        List<double> amounts =
-            members.map((e) => e.amount?.abs() ?? 0).toList();
-        maxAmount = amounts.reduce(max).toInt();
-        emit(DashboardSuccess());
-      }).onError((error, stackTrace) {
-        emit(DashboardError(error.toString()));
-      });
+      var groupsSnapShot = await Reference.groups.child(groupId).get();
+      var groupMap = groupsSnapShot.toMap();
+      group = GroupModel.fromJson(groupMap);
+      List<double> amounts =
+          group?.members?.map((e) => e.amount?.abs() ?? 0).toList() ?? [];
+      maxAmount = amounts.reduce(max).toInt();
+      emit(DashboardSuccess());
     }
   }
 
@@ -165,21 +99,25 @@ class DashboardCubit extends Cubit<DashboardState> {
     state is! DashboardLoading
         ? emit(DashboardLoading())
         : emit(DashboardInitial());
-    if (firebaseAuth.currentUser != null) {
-      userRef.child(memberId).get().then((value) {
+    if (currentUser != null) {
+      Reference.users.child(memberId).get().then((value) {
         var member = GroupMember(
                 name: value.child("name").value.toString(),
                 id: value.child("id").value.toString(),
                 amount: 0)
             .toJson();
-        allGroupRef
+        Reference.groups
             .child(group?.groupId ?? "")
             .child("members")
             .child(memberId)
             .set(member)
             .then((value) {
           var groupMap = {group?.groupId: group?.groupName};
-          userRef.child(memberId).child('groups').set(groupMap).then((value) {
+          Reference.users
+              .child(memberId)
+              .child('groups')
+              .set(groupMap)
+              .then((value) {
             emit(MemberJoined());
             getUserDetail();
           });
@@ -192,20 +130,22 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 
-  Future<dynamic> logout() async {
+  logout() async {
     emit(DashboardLoading());
-    firebaseAuth.signOut().then((value) {
-      selectedGroupId = null;
+    try {
+      await FirebaseAuth.instance.signOut();
       emit(LogoutSuccess());
-    }).onError((error, stackTrace) {
-      emit(DashboardError(error.toString()));
-    });
+    } on FirebaseException catch (e) {
+      emit(DashboardError(e.message ?? ""));
+    }
   }
 
   double getTotalTransactionAmount() {
     double totalTransactionAmount = 0.0;
     group?.transactions?.forEach((element) {
-      if (element.isSettleUpTransaction != true) {
+      if (element.isSettleUpTransaction == true) {
+        return;
+      } else {
         totalTransactionAmount += element.transactionAmount ?? 0;
       }
     });

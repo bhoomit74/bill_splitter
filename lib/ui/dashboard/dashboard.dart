@@ -322,16 +322,16 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               addHorizontalSpacing(10),
-              Text(cubit.username,
+              Text(cubit.currentUser?.displayName ?? "",
                   style: h4Bold()
                       .copyWith(fontSize: 18, color: MyColor.white_800)),
             ],
           ),
           addVerticalSpacing(20),
-          buttonSmall(cubit.userId, () async {
+          buttonSmall(cubit.currentUser?.uid ?? "", () async {
             await FlutterShare.share(
                 title: "Share member id",
-                text: cubit.userId,
+                text: cubit.currentUser?.uid ?? "",
                 chooserTitle: 'TITLE');
           }),
         ],
@@ -488,7 +488,7 @@ class _DashboardState extends State<Dashboard> {
                     child: commonButton("Share Id", context, () async {
                       await FlutterShare.share(
                           title: "Share member id",
-                          text: cubit.userId,
+                          text: cubit.currentUser?.uid,
                           chooserTitle: 'TITLE');
                     }),
                   ),
